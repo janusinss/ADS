@@ -1,87 +1,202 @@
-/* style.css */
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=JetBrains+Mono:wght@300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Oswald:wght@500;700&family=JetBrains+Mono:wght@400&display=swap');
 
 :root {
-    /* === LIGHT MODE (Warm Beige) === */
-    /* Background: The lightest beige */
-    --bg-color: #f9f8f6; 
+    /* === WARM MODE (Molten Core) === */
+    /* Text: Bright Cream & Gold to pop against the dark bronze background */
+    --text-primary: #fff7ed; /* Orange-tinted White */
+    --text-secondary: #fdba74; /* Muted Gold/Orange */
     
-    /* Text: Using the Deep Navy from your dark palette for sharp contrast */
-    --text-main: #19183b; 
-    --text-muted: #708993; 
+    /* Glass Cards: Dark Brown Glass instead of White Glass */
+    --card-bg: rgba(66, 32, 6, 0.3); /* Deep Amber transparency */
+    --card-hover: rgba(146, 64, 14, 0.4); /* Brighter Rust on hover */
+    --border-color: rgba(251, 191, 36, 0.3); /* Gold borders */
     
-    /* Cards: The secondary beige */
-    --card-bg: rgba(239, 233, 227, 0.6); /* #efe9e3 with opacity */
-    --card-hover: rgba(239, 233, 227, 0.9);
-    
-    /* Borders: The darker beige */
-    --border-color: #d9cfc7;
-    --accent: #c9b59c; /* The gold/tan color */
+    --accent: #fbbf24; /* Amber 400 */
+    --cursor-color: #f59e0b; /* Amber 500 */
 }
 
 [data-theme="dark"] {
-    /* === DARK MODE (Deep Navy) === */
-    /* Background: Deep Navy */
-    --bg-color: #19183b;
+    /* === DARK MODE (Cyber Void) === */
+    /* Text: Cool White & Blue-Grey */
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
     
-    /* Text: The lightest mint from your palette */
-    --text-main: #e7f2ef;
-    --text-muted: #a1c2bd;
+    /* Glass Cards: Dark Blue Glass */
+    --card-bg: rgba(15, 23, 42, 0.4);
+    --card-hover: rgba(30, 41, 59, 0.6);
+    --border-color: rgba(255, 255, 255, 0.15);
     
-    /* Cards: Navy with a touch of Slate */
-    --card-bg: rgba(25, 24, 59, 0.7); 
-    --card-hover: rgba(112, 137, 147, 0.3); /* #708993 low opacity */
-    
-    /* Borders: Slate Blue */
-    --border-color: rgba(112, 137, 147, 0.3);
-    --accent: #a1c2bd; /* Teal */
+    --accent: #67e8f9; /* Cyan 300 */
+    --cursor-color: #67e8f9;
 }
 
-/* Update body to use these new variables */
+/* === LENIS SMOOTH SCROLL === */
+html.lenis { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* === CORE STYLES === */
+* { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+
 body {
-    background-color: var(--bg-color);
-    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+    background-color: #f9f8f6;
+    transition: background-color 0.5s ease;
+    overflow-x: hidden;
 }
 
-/* TYPOGRAPHY AS UI */
-h1, h2, h3 {
-    font-family: 'Oswald', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
+/* TYPOGRAPHY */
+h1, h2, h3 { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+
+h1[data-scramble] {
+    /* Adds a subtle glow to the main name */
+    text-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
-/* DESTROYING THE CARDS */
-.card-glass, .project-card, .info-card {
-    background: transparent !important;
-    backdrop-filter: none !important;
-    border: none !important;
-    border-left: 1px solid rgba(128, 128, 128, 0.2) !important; /* Minimalist alignment line */
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    padding-left: 2rem !important;
-    margin-bottom: 4rem;
+.section-title {
+    font-size: 4rem;
+    line-height: 1;
+    font-weight: 700;
+    margin-bottom: 3rem;
+    opacity: 0.15; /* Subtle big background text style */
+    transition: opacity 0.5s;
+}
+.section-title:hover { opacity: 0.8; } /* Interaction */
+
+/* === GLASS CARD & TILT === */
+.project-card, .info-card, .skill-tag, input, textarea {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 2px; /* Sharp tech look */
+    transition: transform 0.1s ease-out, background 0.3s ease; /* Quick transform for tilt */
+    transform-style: preserve-3d; /* Essential for 3D tilt */
+    perspective: 1000px;
+}
+
+/* === BUTTONS === */
+.btn-minimal {
+    border: 1px solid var(--text-primary);
+    color: var(--text-primary);
     transition: all 0.3s ease;
-}
-
-/* THE HOVER EFFECT: Text Glitch/Shift */
-.card-glass:hover {
-    transform: translateX(10px); /* Slide right instead of pop up */
-    border-left-color: var(--accent) !important;
-}
-
-/* BUTTONS -> JUST TEXT */
-.btn-primary, .btn-link {
-    background: transparent;
-    border: 1px solid var(--text-main);
-    color: var(--text-main);
-    border-radius: 0; /* Square edges */
+    padding: 1rem 2rem;
     text-transform: uppercase;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     letter-spacing: 0.1em;
 }
+.btn-minimal:hover {
+    background: var(--text-primary);
+    color: #fff;
+}
 
-.btn-primary:hover, .btn-link:hover {
-    background: var(--text-main);
-    color: var(--bg-color);
-    box-shadow: none;
+/* === CURSOR === */
+#cursor {
+    position: fixed;
+    top: 0; left: 0;
+    width: 10px; height: 10px;
+    background: var(--cursor-color);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+    mix-blend-mode: difference; /* Cool overlap effect */
+}
+#cursor.hovered { width: 60px; height: 60px; opacity: 0.2; }
+
+/* INPUTS */
+input, textarea {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    outline: none;
+}
+input:focus, textarea:focus { border-color: var(--accent); }
+
+/* NAV */
+.nav-item { position: relative; }
+.nav-item::after {
+    content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px;
+    background: var(--accent); transition: width 0.3s;
+}
+.nav-item:hover::after { width: 100%; }
+
+/* UTILS */
+.content-wrapper { position: relative; z-index: 2; }
+#webgl-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+
+/* === THEME SIDEBAR (Add this to the bottom) === */
+.side-nav {
+    position: fixed;
+    left: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 50; /* Keeps it above the canvas */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.theme-toggle {
+    writing-mode: vertical-rl; /* Vertical text for "Creative Dev" look */
+    text-orientation: mixed;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0.5rem;
+    opacity: 0.4;
+}
+
+.theme-toggle:hover {
+    opacity: 1;
+    color: var(--accent);
+    transform: translateX(2px);
+}
+
+.theme-toggle.active {
+    opacity: 1;
+    color: var(--text-primary);
+    border-left: 1px solid var(--accent); /* Active indicator line */
+    padding-left: 1rem;
+}
+
+/* Mobile/Tablet Adjustment (Shows at bottom instead of hidden) */
+@media (max-width: 1024px) {
+    .side-nav {
+        top: auto;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        flex-direction: row;
+        width: auto;
+        background: var(--card-bg); /* Glass background for legibility */
+        backdrop-filter: blur(8px);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        border: 1px solid var(--border-color);
+    }
+    
+    .theme-toggle {
+        writing-mode: horizontal-tb; /* Horizontal on mobile */
+        border-left: none;
+        padding: 0.5rem;
+        font-size: 0.6rem;
+    }
+
+    .theme-toggle.active {
+        border-left: none;
+        border-bottom: 1px solid var(--accent);
+        padding-left: 0.5rem;
+    }
 }

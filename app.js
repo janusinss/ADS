@@ -1,490 +1,339 @@
-// Enhanced app.js with all new features
+// Register Plugins
+gsap.registerPlugin(ScrollTrigger);
+
+let lenis; // Global scroll instance
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize all data loading
+    // 1. Start Preloader Animation
+    simulateLoading();
+
+    // 2. Init Smooth Scroll (Lenis)
+    initLenis();
+
+    initSmoothNav();
+
+    // 3. Load Data
     loadProfile();
-    loadSkills();
     loadProjects();
-    loadHobbies();
-    loadEducation();
-    loadCertifications();
-    loadExperience();
-    loadAchievements();
-    loadPortfolioStats();
+    loadSkills();
+    loadGeneric('experience_api.php?duration=true', 'experience-list', renderExperience);
+    loadGeneric('education_api.php', 'education-list', renderSimpleCard);
+    loadGeneric('certifications_api.php', 'certifications-list', renderSimpleCard);
+    loadGeneric('achievements_api.php', 'achievements-list', renderSimpleCard);
     setupContactForm();
 
-    // Set footer year
-    document.getElementById('footer-year').textContent = new Date().getFullYear();
+    // 4. Init UI Effects
+    initCustomCursor();
     
-    // Initialize Lucide icons
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
+    document.getElementById('footer-year').textContent = new Date().getFullYear();
 });
 
-/**
- * Loads profile data from the API and renders it.
- */
-async function loadProfile() {
-    try {
-        const response = await fetch('./api/profile_api.php');
-        if (!response.ok) throw new Error('Network response was not ok');
-        
-        const profile = await response.json();
-        renderProfile(profile);
-    } catch (error) {
-        console.error('Error loading profile:', error);
-        document.getElementById('profile-content').innerHTML = 
-            '<p class="text-red-400">Error loading profile data.</p>';
-    }
-}
+// === BOOT SEQUENCE ===
+function simulateLoading() {
+    const bar = document.getElementById('loader-bar');
+    const logs = document.getElementById('boot-logs');
+    const preloader = document.getElementById('preloader');
+    
+    // Tech jargon for the creative dev vibe
+    const bootText = [
+        "INITIALIZING CORE MODULES...",
+        "MOUNTING VIRTUAL DOM...",
+        "ALLOCATING MEMORY BLOCKS...",
+        "COMPILING SHADERS [FRAG/VERT]...",
+        "CONNECTING TO MAINNET...",
+        "DECRYPTING SECURE ASSETS...",
+        "OPTIMIZING GEOMETRY BUFFERS...",
+        "ESTABLISHING NEURAL LINK...",
+        "SYSTEM READY."
+    ];
 
-/**
- * Renders the profile data into the 'about' section.
- */
-function renderProfile(profile) {
-    const profileContainer = document.getElementById('profile-content');
-    profileContainer.innerHTML = `
-        <div class="order-2 md:order-1">
-            <h1 class="text-5xl font-bold mb-4">${profile.full_name}</h1>
-            <h2 class="text-3xl font-light text-cyan-400 mb-6">${profile.professional_title}</h2>
-            <p class="text-lg text-gray-300 mb-8">${profile.bio}</p>
-            <div class="flex flex-wrap gap-4">
-                <a href="#contact" class="btn-primary">Contact Me</a>
-                <a href="${profile.facebook_url}" target="_blank" rel="noopener noreferrer" class="btn-link">
-                    <i data-lucide="facebook"></i>Facebook
-                </a>
-            </div>
-            <div class="mt-8 space-y-2 text-gray-300">
-                <div class="flex items-center gap-3">
-                    <i data-lucide="mail" class="text-cyan-400"></i>
-                    <span>${profile.email}</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <i data-lucide="phone" class="text-cyan-400"></i>
-                    <span>${profile.phone}</span>
-                </div>
-            </div>
-        </div>
-        <div class="order-1 md:order-2 flex justify-center items-center">
-            <img src="${profile.profile_photo_url}" alt="${profile.full_name}" 
-                 class="w-64 h-64 md:w-96 md:h-96 rounded-full object-cover border-4 border-cyan-500 shadow-lg shadow-cyan-500/20">
-        </div>
-    `;
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-}
+    let width = 0;
+    let logIndex = 0;
 
-/**
- * Loads skills data from the API and renders it.
- */
-async function loadSkills() {
-    try {
-        const response = await fetch('./api/skills_api.php');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const skills = await response.json();
-        renderSkills(skills);
-    } catch (error) {
-        console.error('Error loading skills:', error);
-        document.getElementById('skills-grid').innerHTML = 
-            '<p class="text-red-400">Error loading skills data.</p>';
-    }
-}
-
-/**
- * Renders skills into a grid.
- */
-function renderSkills(skills) {
-    const skillsGrid = document.getElementById('skills-grid');
-    if (skills.length === 0) {
-        skillsGrid.innerHTML = '<p>No skills listed yet.</p>';
-        return;
-    }
-
-    skillsGrid.innerHTML = skills.map(skill => `
-        <div class="card-glass text-center p-6">
-            <h3 class="text-xl font-bold mb-2">${skill.name}</h3>
-            <p class="text-sm text-cyan-400 mb-4">${skill.category_name}</p>
-            <div class="w-full bg-gray-700 rounded-full h-2.5">
-                <div class="bg-cyan-500 h-2.5 rounded-full" style="width: ${skill.proficiency}%"></div>
-            </div>
-            <span class="text-xs font-medium text-gray-300 mt-2 block">${skill.proficiency}% Proficient</span>
-        </div>
-    `).join('');
-}
-
-/**
- * Loads projects data from the API and renders it.
- */
-async function loadProjects() {
-    try {
-        const response = await fetch('./api/projects_api.php');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const projects = await response.json();
-        renderProjects(projects);
-    } catch (error) {
-        console.error('Error loading projects:', error);
-        document.getElementById('projects-grid').innerHTML = 
-            '<p class="text-red-400">Error loading projects data.</p>';
-    }
-}
-
-/**
- * Renders projects into a grid.
- */
-function renderProjects(projects) {
-    const projectsGrid = document.getElementById('projects-grid');
-    if (projects.length === 0) {
-        projectsGrid.innerHTML = '<p>No projects listed yet.</p>';
-        return;
-    }
-
-    projectsGrid.innerHTML = projects.map(project => `
-        <div class="card-glass overflow-hidden flex flex-col">
-            <img src="${project.image_url}" alt="${project.title}" class="w-full h-48 object-cover">
-            <div class="p-6 flex flex-col flex-grow">
-                <h3 class="text-xl font-bold mb-2">${project.title}</h3>
-                <p class="text-gray-300 text-sm mb-4 flex-grow">${project.description}</p>
-                <div class="flex space-x-4 mt-auto">
-                    <a href="${project.project_url}" target="_blank" rel="noopener noreferrer" class="btn-link">
-                        <i data-lucide="external-link" class="w-4 h-4"></i>Live Demo
-                    </a>
-                    <a href="${project.repo_url}" target="_blank" rel="noopener noreferrer" class="btn-link">
-                        <i data-lucide="github" class="w-4 h-4"></i>Repo
-                    </a>
-                </div>
-            </div>
-        </div>
-    `).join('');
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-}
-
-/**
- * Loads hobbies data from the API and renders it.
- */
-async function loadHobbies() {
-    try {
-        const response = await fetch('./api/hobbies_api.php');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const hobbies = await response.json();
-        renderHobbies(hobbies);
-    } catch (error) {
-        console.error('Error loading hobbies:', error);
-        document.getElementById('hobbies-list').innerHTML = 
-            '<p class="text-red-400">Error loading hobbies data.</p>';
-    }
-}
-
-/**
- * Renders hobbies into a list.
- */
-function renderHobbies(hobbies) {
-    const hobbiesList = document.getElementById('hobbies-list');
-    if (hobbies.length === 0) {
-        hobbiesList.innerHTML = '<p>No hobbies listed yet.</p>';
-        return;
-    }
-
-    hobbiesList.innerHTML = hobbies.map(hobby => `
-        <div class="card-glass p-4">
-            <h3 class="text-lg font-semibold">${hobby.name}</h3>
-        </div>
-    `).join('');
-}
-
-/**
- * NEW: Load Education data
- */
-async function loadEducation() {
-    try {
-        const response = await fetch('./api/education_api.php');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const education = await response.json();
-        renderEducation(education);
-    } catch (error) {
-        console.error('Error loading education:', error);
-        document.getElementById('education-list').innerHTML = 
-            '<p class="text-red-400">Error loading education data.</p>';
-    }
-}
-
-/**
- * Render Education
- */
-function renderEducation(educationList) {
-    const container = document.getElementById('education-list');
-    if (educationList.length === 0) {
-        container.innerHTML = '<p>No education records yet.</p>';
-        return;
-    }
-
-    container.innerHTML = educationList.map(edu => `
-        <div class="card-glass p-6">
-            <div class="flex justify-between items-start mb-3">
-                <div>
-                    <h3 class="text-xl font-bold">${edu.degree}</h3>
-                    <p class="text-cyan-400">${edu.institution}</p>
-                </div>
-                ${edu.is_current == 1 ? '<span class="text-xs bg-cyan-500 text-gray-900 px-3 py-1 rounded-full font-bold">Current</span>' : ''}
-            </div>
-            ${edu.field_of_study ? `<p class="text-gray-300 mb-2"><strong>Field:</strong> ${edu.field_of_study}</p>` : ''}
-            <p class="text-gray-400 text-sm mb-2">
-                <i data-lucide="calendar" class="w-4 h-4 inline"></i>
-                ${formatDate(edu.start_date)} - ${edu.end_date ? formatDate(edu.end_date) : 'Present'}
-            </p>
-            ${edu.location ? `<p class="text-gray-400 text-sm mb-2"><i data-lucide="map-pin" class="w-4 h-4 inline"></i> ${edu.location}</p>` : ''}
-            ${edu.grade ? `<p class="text-gray-300 text-sm"><strong>Grade:</strong> ${edu.grade}</p>` : ''}
-            ${edu.description ? `<p class="text-gray-300 text-sm mt-3">${edu.description}</p>` : ''}
-        </div>
-    `).join('');
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-}
-
-/**
- * NEW: Load Certifications
- */
-async function loadCertifications() {
-    try {
-        const response = await fetch('./api/certifications_api.php');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const certs = await response.json();
-        renderCertifications(certs);
-    } catch (error) {
-        console.error('Error loading certifications:', error);
-        document.getElementById('certifications-grid').innerHTML = 
-            '<p class="text-red-400">Error loading certifications data.</p>';
-    }
-}
-
-/**
- * Render Certifications
- */
-function renderCertifications(certs) {
-    const container = document.getElementById('certifications-grid');
-    if (certs.length === 0) {
-        container.innerHTML = '<p>No certifications yet.</p>';
-        return;
-    }
-
-    container.innerHTML = certs.map(cert => {
-        const isExpired = cert.expiry_date && new Date(cert.expiry_date) < new Date();
-        return `
-        <div class="card-glass p-6">
-            <div class="flex justify-between items-start mb-3">
-                <h3 class="text-lg font-bold">${cert.title}</h3>
-                ${isExpired ? '<span class="text-xs bg-red-500 text-white px-2 py-1 rounded">Expired</span>' : 
-                  '<span class="text-xs bg-green-500 text-white px-2 py-1 rounded">Active</span>'}
-            </div>
-            <p class="text-cyan-400 mb-2">${cert.issuing_organization}</p>
-            <p class="text-gray-400 text-sm mb-2">
-                <i data-lucide="calendar" class="w-4 h-4 inline"></i>
-                Issued: ${formatDate(cert.issue_date)}
-            </p>
-            ${cert.expiry_date ? `<p class="text-gray-400 text-sm mb-2">Expires: ${formatDate(cert.expiry_date)}</p>` : ''}
-            ${cert.credential_url ? `<a href="${cert.credential_url}" target="_blank" class="text-cyan-400 text-sm hover:underline">View Credential</a>` : ''}
-        </div>
-    `}).join('');
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-}
-
-/**
- * NEW: Load Experience
- */
-async function loadExperience() {
-    try {
-        const response = await fetch('./api/experience_api.php?duration=true');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const experiences = await response.json();
-        renderExperience(experiences);
-    } catch (error) {
-        console.error('Error loading experience:', error);
-        document.getElementById('experience-list').innerHTML = 
-            '<p class="text-red-400">Error loading experience data.</p>';
-    }
-}
-
-/**
- * Render Experience
- */
-function renderExperience(experiences) {
-    const container = document.getElementById('experience-list');
-    if (experiences.length === 0) {
-        container.innerHTML = '<p>No work experience yet.</p>';
-        return;
-    }
-
-    container.innerHTML = experiences.map(exp => `
-        <div class="card-glass p-6">
-            <div class="flex justify-between items-start mb-3">
-                <div>
-                    <h3 class="text-xl font-bold">${exp.position}</h3>
-                    <p class="text-cyan-400">${exp.company}</p>
-                </div>
-                ${exp.is_current == 1 ? '<span class="text-xs bg-cyan-500 text-gray-900 px-3 py-1 rounded-full font-bold">Current</span>' : ''}
-            </div>
-            <div class="flex flex-wrap gap-2 mb-3">
-                <span class="text-xs bg-gray-700 px-3 py-1 rounded-full">${exp.employment_type}</span>
-                ${exp.location ? `<span class="text-xs bg-gray-700 px-3 py-1 rounded-full"><i data-lucide="map-pin" class="w-3 h-3 inline"></i> ${exp.location}</span>` : ''}
-            </div>
-            <p class="text-gray-400 text-sm mb-2">
-                <i data-lucide="calendar" class="w-4 h-4 inline"></i>
-                ${formatDate(exp.start_date)} - ${exp.end_date ? formatDate(exp.end_date) : 'Present'}
-                ${exp.duration_text ? ` (${exp.duration_text})` : ''}
-            </p>
-            ${exp.description ? `<p class="text-gray-300 text-sm mt-3">${exp.description}</p>` : ''}
-        </div>
-    `).join('');
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-}
-
-/**
- * NEW: Load Achievements
- */
-async function loadAchievements() {
-    try {
-        const response = await fetch('./api/achievements_api.php');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const achievements = await response.json();
-        renderAchievements(achievements);
-    } catch (error) {
-        console.error('Error loading achievements:', error);
-        document.getElementById('achievements-grid').innerHTML = 
-            '<p class="text-red-400">Error loading achievements data.</p>';
-    }
-}
-
-/**
- * Render Achievements
- */
-function renderAchievements(achievements) {
-    const container = document.getElementById('achievements-grid');
-    if (achievements.length === 0) {
-        container.innerHTML = '<p>No achievements yet.</p>';
-        return;
-    }
-
-    const categoryIcons = {
-        'award': 'trophy',
-        'recognition': 'star',
-        'competition': 'target',
-        'publication': 'book-open',
-        'other': 'award'
+    // Function to add a log line
+    const addLog = (text) => {
+        const p = document.createElement('div');
+        p.innerHTML = `<span class="text-cyan-500">>></span> ${text}`;
+        logs.appendChild(p);
+        // Keep only last 5 logs
+        if (logs.children.length > 5) logs.removeChild(logs.firstChild);
     };
 
-    container.innerHTML = achievements.map(ach => `
-        <div class="card-glass p-6">
-            <div class="flex items-start gap-4">
-                <div class="text-cyan-400 mt-1">
-                    <i data-lucide="${categoryIcons[ach.category] || 'award'}" class="w-6 h-6"></i>
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-lg font-bold mb-1">${ach.title}</h3>
-                    <p class="text-sm text-cyan-400 mb-2">${ach.category}</p>
-                    ${ach.issuing_organization ? `<p class="text-gray-400 text-sm mb-2">${ach.issuing_organization}</p>` : ''}
-                    <p class="text-gray-400 text-sm mb-2">
-                        <i data-lucide="calendar" class="w-4 h-4 inline"></i>
-                        ${formatDate(ach.date_achieved)}
-                    </p>
-                    ${ach.description ? `<p class="text-gray-300 text-sm">${ach.description}</p>` : ''}
-                </div>
-            </div>
-        </div>
-    `).join('');
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    const interval = setInterval(() => {
+        width += Math.random() * 2; // Random speed
+        if (width > 100) width = 100;
+        
+        bar.style.width = width + '%';
+
+        // Add random log every ~15% progress
+        if (width > (logIndex + 1) * 12 && logIndex < bootText.length) {
+            addLog(bootText[logIndex]);
+            logIndex++;
+        }
+
+        if (width === 100) {
+            clearInterval(interval);
+            addLog("ACCESS GRANTED.");
+            
+            // TRIGGER THE CINEMATIC REVEAL
+            setTimeout(() => {
+                // 1. Slide Preloader Away (Curtain effect)
+                gsap.to(preloader, {
+                    yPercent: -100,
+                    duration: 1,
+                    ease: "power4.inOut"
+                });
+
+                // 2. Trigger the 3D Camera Zoom (in index.html)
+                if (window.playIntroAnimation) window.playIntroAnimation();
+
+                // 3. Animate Elements in
+                animateItems('.fade-in');
+                scrambleText(document.querySelector('h1'));
+
+            }, 500); // Slight pause before reveal
+        }
+    }, 20); // Speed of loader
+
+    
 }
 
-/**
- * NEW: Load Portfolio Statistics (Advanced SQL demonstration)
- */
-async function loadPortfolioStats() {
+// === SMOOTH SCROLL (LENIS) ===
+function initLenis() {
+    lenis = new Lenis({
+        lerp: 0.08, // Smoothness (lower = smoother)
+        smoothWheel: true
+    });
+
+    // Sync Lenis with GSAP ScrollTrigger
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => {
+        lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+}
+
+// === 3D CARD TILT EFFECT ===
+function initTilt(element) {
+    element.addEventListener('mousemove', (e) => {
+        const rect = element.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Calculate rotation (Max 10 degrees)
+        const xPct = (x / rect.width) - 0.5;
+        const yPct = (y / rect.height) - 0.5;
+        const xRot = yPct * -10; 
+        const yRot = xPct * 10;
+
+        gsap.to(element, {
+            transform: `rotateX(${xRot}deg) rotateY(${yRot}deg) scale(1.02)`,
+            duration: 0.1,
+            ease: "power1.out"
+        });
+    });
+
+    element.addEventListener('mouseleave', () => {
+        gsap.to(element, {
+            transform: `rotateX(0) rotateY(0) scale(1)`,
+            duration: 0.5,
+            ease: "elastic.out(1, 0.5)"
+        });
+    });
+}
+
+// === HACKER TEXT SCRAMBLE ===
+function scrambleText(element) {
+    if (!element) return;
+    const finalText = element.innerText;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$%^&*';
+    let iterations = 0;
+
+    const interval = setInterval(() => {
+        element.innerText = finalText
+            .split('')
+            .map((letter, index) => {
+                if (index < iterations) return finalText[index]; // Lock in correct char
+                return chars[Math.floor(Math.random() * chars.length)]; // Random char
+            })
+            .join('');
+
+        if (iterations >= finalText.length) clearInterval(interval);
+        iterations += 1 / 3; // Speed of decoding
+    }, 30);
+}
+
+// === CURSOR ===
+function initCustomCursor() {
+    const cursor = document.getElementById('cursor');
+    const mouse = { x: -100, y: -100 };
+    const pos = { x: -100, y: -100 };
+
+    document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+    gsap.ticker.add(() => {
+        const dt = 1.0 - Math.pow(1.0 - 0.2, gsap.ticker.deltaRatio());
+        pos.x += (mouse.x - pos.x) * dt;
+        pos.y += (mouse.y - pos.y) * dt;
+        cursor.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0) translate(-50%, -50%)`;
+    });
+
+    // Hover listeners (using delegation for dynamic content)
+    document.body.addEventListener('mouseover', (e) => {
+        if (e.target.closest('a, button, input, textarea, .project-card')) {
+            cursor.classList.add('hovered');
+        } else {
+            cursor.classList.remove('hovered');
+        }
+    });
+}
+
+// === ANIMATION HELPER ===
+function animateItems(selector) {
+    ScrollTrigger.batch(selector, {
+        onEnter: batch => {
+            gsap.to(batch, { opacity: 1, y: 0, stagger: 0.1, duration: 0.8, ease: "power3.out" });
+            // Decode text if it has the attribute
+            batch.forEach(el => {
+                if (el.hasAttribute('data-scramble')) scrambleText(el);
+            });
+        },
+        start: "top 90%",
+        once: true
+    });
+}
+
+// === API LOADERS ===
+const API_BASE = './api';
+
+async function loadProfile() {
     try {
-        const response = await fetch('./api/portfolio_stats_api.php');
-        if (!response.ok) return; // Optional feature
-        const stats = await response.json();
-        renderPortfolioStats(stats);
-    } catch (error) {
-        console.error('Error loading stats:', error);
-        // Stats are optional, don't show error
-    }
+        const res = await fetch(`${API_BASE}/profile_api.php`);
+        const data = await res.json();
+        document.getElementById('professional-title').innerText = data.professional_title;
+        document.getElementById('bio-text').innerText = data.bio;
+        
+        // Populate contact
+        document.getElementById('contact-info').innerHTML = `
+            <div class="flex justify-between border-b border-gray-500/30 pb-2">
+                <span>EMAIL</span> <span>${data.email}</span>
+            </div>
+            <div class="flex justify-between border-b border-gray-500/30 pb-2 pt-2">
+                <span>PHONE</span> <span>${data.phone}</span>
+            </div>
+            <div class="pt-4">
+                <a href="${data.facebook_url}" class="text-cyan-400 hover:text-cyan-300">FACEBOOK LINK_</a>
+            </div>
+        `;
+    } catch(e) {}
 }
 
-/**
- * Render Portfolio Statistics
- */
-function renderPortfolioStats(stats) {
-    const container = document.getElementById('portfolio-stats');
-    if (!container) return;
+async function loadProjects() {
+    try {
+        const res = await fetch(`${API_BASE}/projects_api.php`);
+        const data = await res.json();
+        const container = document.getElementById('projects-grid');
+        
+        container.innerHTML = data.map(p => `
+            <div class="project-card p-8 opacity-0 translate-y-8 group">
+                <div class="mb-6 overflow-hidden border-b border-gray-500/20 pb-6">
+                     <h3 class="text-3xl font-bold mb-2 group-hover:text-cyan-400 transition-colors">${p.title}</h3>
+                     <span class="text-xs font-mono border border-gray-500 px-2 py-1 rounded">${p.status || 'DEPLOYED'}</span>
+                </div>
+                <p class="text-sm text-secondary mb-8 leading-relaxed">${p.description}</p>
+                <div class="flex justify-between text-xs font-mono tracking-widest">
+                    <a href="${p.project_url}" class="hover:text-cyan-400">[ VIEW PROJECT ]</a>
+                    <a href="${p.repo_url}" class="hover:text-cyan-400">[ SOURCE CODE ]</a>
+                </div>
+            </div>
+        `).join('');
+        
+        // Apply animations & Tilt
+        animateItems('.project-card');
+        document.querySelectorAll('.project-card').forEach(initTilt);
+        
+    } catch(e) {}
+}
 
-    const overview = stats.overview;
-    container.innerHTML = `
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="card-glass p-4 text-center">
-                <div class="text-3xl font-bold text-cyan-400">${overview.total_skills || 0}</div>
-                <div class="text-sm text-gray-400">Skills</div>
+async function loadSkills() {
+    try {
+        const res = await fetch(`${API_BASE}/skills_api.php`);
+        const data = await res.json();
+        const container = document.getElementById('skills-container');
+        container.innerHTML = data.map(s => `
+            <div class="skill-tag px-4 py-3 opacity-0 translate-y-4 text-xs font-mono border border-gray-500/30 hover:border-cyan-400 transition-colors cursor-default">
+                ${s.name} <span class="text-cyan-400">// ${s.proficiency}%</span>
             </div>
-            <div class="card-glass p-4 text-center">
-                <div class="text-3xl font-bold text-cyan-400">${overview.completed_projects || 0}</div>
-                <div class="text-sm text-gray-400">Projects</div>
-            </div>
-            <div class="card-glass p-4 text-center">
-                <div class="text-3xl font-bold text-cyan-400">${overview.total_certifications || 0}</div>
-                <div class="text-sm text-gray-400">Certifications</div>
-            </div>
-            <div class="card-glass p-4 text-center">
-                <div class="text-3xl font-bold text-cyan-400">${overview.total_achievements || 0}</div>
-                <div class="text-sm text-gray-400">Achievements</div>
-            </div>
+        `).join('');
+        animateItems('.skill-tag');
+    } catch(e) {}
+}
+
+// Generic Loader
+async function loadGeneric(endpoint, id, renderFn) {
+    try {
+        const res = await fetch(`${API_BASE}/${endpoint}`);
+        const data = await res.json();
+        document.getElementById(id).innerHTML = data.map(renderFn).join('');
+        animateItems(`#${id} > div`);
+    } catch(e) {}
+}
+
+// Render Helpers
+const renderExperience = exp => `
+    <div class="info-card p-6 opacity-0 translate-y-8 border-l-2 border-transparent hover:border-cyan-400 transition-all">
+        <div class="flex justify-between items-baseline mb-2">
+            <h4 class="font-bold text-lg">${exp.position}</h4>
+            <span class="text-xs font-mono text-cyan-500">${exp.duration_text || ''}</span>
         </div>
-    `;
-}
+        <p class="text-sm font-mono mb-4 text-secondary">${exp.company}</p>
+        <p class="text-sm text-secondary/80 leading-relaxed">${exp.description}</p>
+    </div>
+`;
 
-/**
- * Helper function to format dates
- */
-function formatDate(dateString) {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
-}
+const renderSimpleCard = item => `
+    <div class="info-card p-6 opacity-0 translate-y-8">
+        <h4 class="font-bold text-lg mb-1">${item.degree || item.title}</h4>
+        <p class="text-sm font-mono text-cyan-500">${item.institution || item.issuing_organization}</p>
+    </div>
+`;
 
-/**
- * Sets up the event listener for the contact form.
- */
 function setupContactForm() {
     const form = document.getElementById('contact-form');
-    const submitButton = document.getElementById('contact-submit-btn');
-    const formMessage = document.getElementById('form-message');
-
+    const msg = document.getElementById('form-message');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        submitButton.disabled = true;
-        submitButton.textContent = 'Sending...';
-        formMessage.classList.add('hidden');
-
         const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-
         try {
-            const response = await fetch('./api/contacts_api.php', {
+            const res = await fetch(`${API_BASE}/contacts_api.php`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(Object.fromEntries(formData))
             });
-
-            const result = await response.json();
-
-            if (response.status === 201) {
-                formMessage.textContent = result.message;
-                formMessage.className = 'p-4 rounded-lg bg-green-900 text-green-300';
+            if (res.ok) {
+                msg.textContent = 'TRANSMISSION SUCCESSFUL';
+                msg.className = 'p-4 text-xs font-mono bg-cyan-900/30 text-cyan-400 border border-cyan-900 block';
                 form.reset();
-            } else {
-                throw new Error(result.message || 'An unknown error occurred.');
             }
-        } catch (error) {
-            formMessage.textContent = error.message;
-            formMessage.className = 'p-4 rounded-lg bg-red-900 text-red-300';
-        } finally {
-            formMessage.classList.remove('hidden');
-            submitButton.disabled = false;
-            submitButton.textContent = 'Send Message';
-        }
+        } catch (e) {}
+    });
+}
+
+// === NAVIGATION SMOOTH SCROLL ===
+function initSmoothNav() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault(); // Stop instant jump
+            const targetId = this.getAttribute('href');
+            const targetElem = document.querySelector(targetId);
+            
+            if (targetElem && lenis) {
+                lenis.scrollTo(targetElem, {
+                    offset: 0,
+                    duration: 1.5, // Slower = more dramatic
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) // Exponential ease out
+                });
+            }
+        });
     });
 }

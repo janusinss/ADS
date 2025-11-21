@@ -1,753 +1,471 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Janus Dominic - Developer Portfolio</title>
+    <title>Janus Dominic - Creative Developer</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-        
-        :root {
-            /* === LIGHT MODE (Frosted Ice) === */
-            --text-primary: #0f172a;       /* Deep Navy for sharp contrast */
-            --text-secondary: #475569;     /* Slate Gray */
-            
-            /* The Fix: Higher opacity (0.75) prevents the background from muddying the text */
-            --card-bg: rgba(255, 255, 255, 0.75);
-            --card-hover: rgba(255, 255, 255, 0.90);
-            
-            /* Strong white border makes it look like glass, not plastic */
-            --border-color: rgba(255, 255, 255, 0.6);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
-            --accent-glow: rgba(6, 182, 212, 0.3);
-        }
-
-        [data-theme="dark"] {
-            /* === DARK MODE (Deep Ocean) === */
-            --text-primary: #f8fafc;       /* Off-white */
-            --text-secondary: #94a3b8;     /* Light Slate */
-            
-            /* Dark tint (Slate-900) with lower opacity */
-            --card-bg: rgba(15, 23, 42, 0.65);
-            --card-hover: rgba(30, 41, 59, 0.80);
-            
-            /* Thin, subtle border for dark mode */
-            --border-color: rgba(255, 255, 255, 0.1);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-            --accent-glow: rgba(6, 182, 212, 0.2);
-        }
-
-        input, textarea {
-            /* Use the same variable system */
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            border-radius: 8px;
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            background: var(--card-hover);
-            border-color: #06b6d4; /* Cyan highlight */
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-
-        input::placeholder, textarea::placeholder {
-            color: var(--text-secondary);
-            opacity: 0.7;
-        }
-
-        /* Fix: Increase font weight for headers to stand out against the shader */
-        h1, h2, h3, h4 {
-            font-weight: 600 !important; /* Overrides previous font-light */
-            letter-spacing: -0.02em;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            color: var(--text-primary);
-            position: relative;
-            overflow-x: hidden;
-        }
-        
-        #webgl-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-        
-        .content-wrapper {
-            position: relative;
-            z-index: 2;
-        }
-        
-        .nav-item {
-            transition: all 0.3s ease;
-            position: relative;
-            padding-bottom: 2px;
-            color: var(--text-primary);
-        }
-        
-        .nav-item::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: var(--text-primary);
-            transition: width 0.3s ease;
-        }
-        
-        .nav-item:hover::after {
-            width: 100%;
-        }
-        
-        .section-title {
-            font-weight: 700;
-            font-size: 0.875rem; /* Slightly larger */
-            opacity: 0.9;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary); /* Better visibility than secondary */
-        }
-        
-        .project-card, .info-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            transition: all 0.4s ease;
-            border: 1px solid var(--border-color);
-        }
-        
-        .project-card:hover, .info-card:hover {
-            background: var(--card-hover);
-            transform: translateY(-4px);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-        }
-        
-        .skill-tag {
-            background: var(--card-bg);
-            backdrop-filter: blur(30px);
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            color: var(--text-primary);
-        }
-        
-        .skill-tag:hover {
-            background: var(--card-hover);
-            transform: translateY(-2px);
-        }
-        
-        .fade-in {
-            opacity: 0;
-        }
-        
-        .btn-minimal {
-            position: relative;
-            padding: 0.5rem 1.5rem;
-            background: transparent;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            color: var(--text-primary);
-        }
-        
-        .btn-minimal:hover {
-            background: var(--card-bg);
-            border-color: var(--text-primary);
-            transform: translateY(-2px);
-        }
-        
-        .side-nav {
-            position: fixed;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            writing-mode: vertical-rl;
-            z-index: 10;
-        }
-        
-        .side-nav button {
-            font-size: 0.65rem;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            padding: 1rem 0.5rem;
-            transition: all 0.3s ease;
-            opacity: 0.4;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-primary);
-        }
-        
-        .side-nav button:hover {
-            opacity: 1;
-        }
-        
-        .side-nav button.active {
-            opacity: 1;
-            font-weight: 500;
-        }
-
-        input, textarea {
-            background: var(--card-bg);
-            backdrop-filter: blur(30px);
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            color: var(--text-primary);
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            background: var(--card-hover);
-            border-color: var(--text-primary);
-        }
-
-        input::placeholder, textarea::placeholder {
-            color: var(--text-secondary);
-        }
-
-        .text-secondary {
-            color: var(--text-secondary);
-        }
-
-        .link-arrow {
-            color: var(--text-secondary);
-            transition: all 0.3s ease;
-        }
-
-        .link-arrow:hover {
-            color: var(--text-primary);
-        }
-
-        * {
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-        }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="preloader" class="fixed inset-0 z-[9999] bg-[#050505] flex flex-col items-center justify-center font-mono text-xs sm:text-sm text-secondary selection:bg-cyan-500 selection:text-black">
+        <div class="w-64 sm:w-80">
+            <div class="flex justify-between mb-4 border-b border-gray-800 pb-2 opacity-50">
+                <span>SYSTEM_BOOT.exe</span>
+                <span>V 2.4.0</span>
+            </div>
+            
+            <div id="boot-logs" class="h-32 overflow-hidden flex flex-col justify-end mb-4 text-gray-400 leading-tight">
+                </div>
+
+            <div class="w-full h-[2px] bg-gray-800 mt-2 relative overflow-hidden">
+                <div id="loader-bar" class="absolute top-0 left-0 h-full bg-cyan-500 w-0 shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
+            </div>
+        </div>
+    </div>
+
     <canvas id="webgl-canvas"></canvas>
-    
-    <div class="side-nav hidden lg:flex flex-col">
-        <button id="theme-dark" onclick="setTheme('dark')" class="theme-toggle">Dark</button>
-        <button id="theme-light" onclick="setTheme('light')" class="theme-toggle active">Light</button>
+    <div id="cursor"></div>
+
+    <div class="side-nav">
+        <button id="theme-dark" onclick="setTheme('dark')" class="theme-toggle">DARK</button>
+        <button id="theme-light" onclick="setTheme('light')" class="theme-toggle active">WARM</button>
     </div>
 
     <div class="content-wrapper">
-        <header class="px-6 lg:px-16 py-8 lg:py-12">
-            <div class="max-w-7xl mx-auto">
-                <h1 class="text-3xl lg:text-5xl font-light mb-2 fade-in">Janus Dominic</h1>
-                <p class="text-sm lg:text-base text-secondary font-light fade-in" id="professional-title">Full-Stack Developer</p>
-                
-                <nav class="mt-8 lg:mt-12 flex gap-8 text-sm font-light fade-in">
-                    <a href="#projects" class="nav-item">Projects</a>
-                    <a href="#info" class="nav-item">Info</a>
-                    <a href="#contact" class="nav-item">Contact</a>
-                </nav>
+        <header class="px-6 lg:px-16 py-8 lg:py-12 min-h-screen flex flex-col justify-center relative z-10">
+            <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-5xl lg:text-8xl font-bold mb-4 tracking-tighter mix-blend-difference" data-scramble>Janus Dominic</h1>
+                    <p class="text-lg lg:text-2xl text-secondary font-light mb-12 font-mono" id="professional-title">Full-Stack Developer</p>
+                    
+                    <nav class="flex gap-8 text-sm font-medium tracking-widest uppercase">
+                        <a href="#projects" class="nav-item">Projects</a>
+                        <a href="#info" class="nav-item">Info</a>
+                        <a href="#contact" class="nav-item">Contact</a>
+                    </nav>
+                </div>
+
+                <div class="hidden lg:block h-full">
+                    </div>
             </div>
         </header>
 
-        <main class="px-6 lg:px-16 pb-16">
+        <main class="px-6 lg:px-16 pb-32">
             <div class="max-w-7xl mx-auto">
                 
-                <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 mb-24 lg:mb-32">
-                    <div class="lg:col-start-2 flex items-center fade-in">
-                        <div>
-                            <p class="text-base lg:text-lg font-light leading-relaxed mb-6" id="bio-text">
-                                Passionate developer crafting digital experiences that blur the line between art and technology. 
-                                Specializing in full-stack development with a focus on creating immersive, interactive web applications 
-                                that push the boundaries of what's possible in the browser.
-                            </p>
-                            <div class="flex gap-4 text-sm">
-                                <a href="#contact" class="btn-minimal">Get in touch</a>
-                                <a href="#projects" class="btn-minimal">View work</a>
+                <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-32">
+                    <div class="lg:col-start-2">
+                        <p class="text-lg lg:text-xl font-light leading-relaxed mb-8" id="bio-text">Loading...</p>
+                        <div class="flex gap-6">
+                            <a href="#contact" class="btn-minimal">Contact Me</a>
+                            <a href="#projects" class="btn-minimal">View Work</a>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="projects" class="mb-32">
+                    <h2 class="section-title" data-scramble>Selected Projects</h2>
+                    <div id="projects-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8"></div>
+                </section>
+
+                <section id="skills" class="mb-32">
+                    <h2 class="section-title" data-scramble>Technical Arsenal</h2>
+                    <div id="skills-container" class="flex flex-wrap gap-3"></div>
+                </section>
+
+                <section id="info" class="mb-32">
+                    <h2 class="section-title" data-scramble>Background</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                        <div class="space-y-12">
+                            <div>
+                                <h3 class="text-xs font-mono text-cyan-500 mb-6 uppercase tracking-wider">Experience</h3>
+                                <div id="experience-list" class="space-y-6"></div>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-mono text-cyan-500 mb-6 uppercase tracking-wider">Education</h3>
+                                <div id="education-list" class="space-y-6"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-12">
+                            <div>
+                                <h3 class="text-xs font-mono text-cyan-500 mb-6 uppercase tracking-wider">Certifications</h3>
+                                <div id="certifications-list" class="space-y-6"></div>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-mono text-cyan-500 mb-6 uppercase tracking-wider">Achievements</h3>
+                                <div id="achievements-list" class="space-y-6"></div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <section id="projects" class="mb-24 lg:mb-32">
-                    <h2 class="section-title fade-in">Selected Projects</h2>
-                    <div id="projects-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8"></div>
-                </section>
-
-                <section id="skills" class="mb-24 lg:mb-32">
-                    <h2 class="section-title fade-in">Skills & Expertise</h2>
-                    <div id="skills-container" class="flex flex-wrap gap-3"></div>
-                </section>
-
-                <section id="info" class="mb-24 lg:mb-32">
-                    <h2 class="section-title fade-in">Background</h2>
-                    
-                    <div class="mb-12">
-                        <h3 class="text-xs uppercase tracking-wider text-secondary mb-4 fade-in">Experience</h3>
-                        <div id="experience-list" class="space-y-4"></div>
-                    </div>
-
-                    <div class="mb-12">
-                        <h3 class="text-xs uppercase tracking-wider text-secondary mb-4 fade-in">Education</h3>
-                        <div id="education-list" class="space-y-4"></div>
-                    </div>
-
-                    <div class="mb-12">
-                        <h3 class="text-xs uppercase tracking-wider text-secondary mb-4 fade-in">Certifications</h3>
-                        <div id="certifications-list" class="space-y-4"></div>
-                    </div>
-
-                    <div>
-                        <h3 class="text-xs uppercase tracking-wider text-secondary mb-4 fade-in">Achievements</h3>
-                        <div id="achievements-list" class="space-y-4"></div>
-                    </div>
-                </section>
-
-                <section id="contact">
-                    <h2 class="section-title fade-in">Get In Touch</h2>
+                <section id="contact" class="min-h-[50vh] flex flex-col justify-center">
+                    <h2 class="section-title" data-scramble>Initialize Handshake</h2>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                        <div class="fade-in">
-                            <p class="text-sm font-light mb-8 text-secondary">
-                                Feel free to reach out for collaborations or just a friendly hello.
-                            </p>
-                            <div class="space-y-3 text-sm" id="contact-info"></div>
+                        <div>
+                            <p class="text-secondary mb-8 font-light">Ready to build something impossible? Send me a transmission.</p>
+                            <div class="space-y-4 text-sm font-mono" id="contact-info"></div>
                         </div>
-                        <div class="fade-in">
-                            <form id="contact-form" class="space-y-4">
-                                <div id="form-message" class="hidden p-3 text-sm rounded"></div>
-                                <input type="text" name="visitor_name" placeholder="Your Name" required class="w-full px-4 py-3 text-sm rounded">
-                                <input type="email" name="visitor_email" placeholder="Your Email" required class="w-full px-4 py-3 text-sm rounded">
-                                <input type="text" name="subject" placeholder="Subject" class="w-full px-4 py-3 text-sm rounded">
-                                <textarea name="message" rows="5" placeholder="Message" required class="w-full px-4 py-3 text-sm rounded resize-none"></textarea>
-                                <button type="submit" class="btn-minimal w-full">Send Message</button>
-                            </form>
-                        </div>
+                        <form id="contact-form" class="space-y-4">
+                            <div id="form-message" class="hidden p-3 text-sm rounded"></div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="text" name="visitor_name" placeholder="NAME" required class="w-full p-4 text-sm">
+                                <input type="email" name="visitor_email" placeholder="EMAIL" required class="w-full p-4 text-sm">
+                            </div>
+                            <input type="text" name="subject" placeholder="SUBJECT" class="w-full p-4 text-sm">
+                            <textarea name="message" rows="4" placeholder="MESSAGE" required class="w-full p-4 text-sm resize-none"></textarea>
+                            <button type="submit" class="btn-minimal w-full py-4 text-xs tracking-[0.2em] uppercase hover:bg-cyan-500 hover:text-white hover:border-cyan-500">Transmit</button>
+                        </form>
                     </div>
                 </section>
             </div>
         </main>
 
-        <footer class="px-6 lg:px-16 py-12 text-center fade-in">
-            <p class="text-xs text-secondary">© <span id="footer-year"></span> Janus Dominic. All rights reserved.</p>
+        <footer class="px-6 py-8 text-center text-xs font-mono text-secondary/50">
+            <p>&copy; <span id="footer-year"></span> JANUS DOMINIC. SYSTEM ACTIVE.</p>
         </footer>
     </div>
 
-    <script>
-        let scene, camera, renderer, mesh;
-        let isDark = false;
-        let mouseX = 0.5, mouseY = 0.5;
-        let targetX = 0.5, targetY = 0.5;
+<script>
+    // === GLOBAL VARIABLES ===
+    let scene, camera, renderer, mesh;
+    let heroGroup;
+    let heroMaterials = {
+        planet: null,
+        ringInner: null,
+        ringMiddle: null,
+        ringOuter: null,
+        particles: null
+    };
+    let lights = {
+        ambient: null,
+        point: null,
+        rim: null
+    };
+    
+    let isDark = localStorage.getItem('theme') === 'dark';
+    let mouseX = 0.5, mouseY = 0.5;
+    let targetX = 0.5, targetY = 0.5;
 
-        function initWebGL() {
-            const canvas = document.getElementById('webgl-canvas');
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 5;
+    function initWebGL() {
+        const canvas = document.getElementById('webgl-canvas');
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 15;
 
-            renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            // In initWebGL function in index.html
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Cap at 1.5x instead of 2x
+        renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
-            const material = new THREE.ShaderMaterial({
-                uniforms: {
-                    u_time: { value: 0 },
-                    u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
-                    u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-                    u_dark: { value: 0.0 }
-                },
-                vertexShader: `
-                    varying vec2 vUv;
-                    void main() {
-                        vUv = uv;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    uniform float u_time;
-                    uniform vec2 u_mouse;
-                    uniform vec2 u_resolution;
-                    uniform float u_dark;
-
-                    varying vec2 vUv;
-
-                    float random(vec2 st) {
-                        return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
-                    }
-
-                    float noise(vec2 st) {
-                        vec2 i = floor(st);
-                        vec2 f = fract(st);
-                        float a = random(i);
-                        float b = random(i + vec2(1.0, 0.0));
-                        float c = random(i + vec2(0.0, 1.0));
-                        float d = random(i + vec2(1.0, 1.0));
-                        vec2 u = f * f * (3.0 - 2.0 * f);
-                        return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
-                    }
-
-                    float fbm(vec2 st) {
-                        float value = 0.0;
-                        float amplitude = 0.5;
-                        for (int i = 0; i < 4; i++) {
-                            value += amplitude * noise(st);
-                            st *= 2.0;
-                            amplitude *= 0.5;
-                        }
-                        return value;
-                    }
-
-                    vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
-                        return a + b * cos(6.28318 * (c * t + d));
-                    }
-
-                    void main() {
-                        vec2 st = vUv;
-                        float aspect = u_resolution.x / u_resolution.y;
-                        st.x *= aspect;
-                        
-                        vec2 mouse = u_mouse;
-                        mouse.x *= aspect;
-
-                        // --- BACKGROUND FLOW (Your Colors) ---
-                        vec2 q = vec2(0.);
-                        q.x = fbm(st + 0.00 * u_time);
-                        q.y = fbm(st + vec2(1.0));
-                        vec2 r = vec2(0.);
-                        r.x = fbm(st + 1.0 * q + vec2(1.7, 9.2) + 0.15 * u_time);
-                        r.y = fbm(st + 1.0 * q + vec2(8.3, 2.8) + 0.126 * u_time);
-                        float f = fbm(st + r);
-
-                        // Light Mode: #f9f8f6 (Base) -> #d9cfc7 (Shadows)
-                        vec3 lightBg = mix(vec3(0.976, 0.972, 0.964), vec3(0.850, 0.811, 0.780), clamp(f*f*4.0, 0.0, 1.0));
-                        
-                        // Dark Mode: #19183b (Base) -> #708993 (Highlights)
-                        vec3 darkBg = mix(vec3(0.098, 0.094, 0.231), vec3(0.439, 0.537, 0.576), clamp(f*f*4.0, 0.0, 1.0));
-                        
-                        vec3 color = mix(lightBg, darkBg, u_dark);
-
-                        // --- CURSOR RIPPLE ---
-                        vec2 diff = st - mouse;
-                        diff.y *= 1.85; // Squash factor
-                        float d = length(diff);
-                        float influence = smoothstep(0.8, 0.0, d);
-
-                        // === COLOR SETTINGS & GLOW CONTROL ===
-                        vec3 a, b, c, dParam;
-                        float glowAmount; // How much white "shine" to add
-                        float opacity;    // How visible the ripple is
-
-                        if (u_dark < 0.5) {
-                            // === LIGHT MODE (Kept exactly as you liked) ===
-                            a = vec3(0.5, 0.5, 0.5);
-                            b = vec3(0.5, 0.5, 0.5);
-                            c = vec3(1.0, 1.0, 1.0);
-                            dParam = vec3(0.788, 0.710, 0.611); // Gold tint
-                            
-                            glowAmount = 2.0; // High glow for "Pearl" look
-                            opacity = 0.04;   // Standard visibility
-                        } else {
-                            // === DARK MODE (Less Glow, Subtle) ===
-                            a = vec3(0.5, 0.5, 0.5);
-                            b = vec3(0.5, 0.5, 0.5);
-                            c = vec3(1.0, 1.0, 1.0);
-                            dParam = vec3(0.631, 0.760, 0.741); // Teal tint
-                            
-                            glowAmount = 1.5; // <--- REDUCED: Very little white shine (was 0.3)
-                            opacity = 0.04;    // <--- REDUCED: More transparent (was 0.30)
-                        }
-
-                        float t = d * 3.0 - u_time * 0.5;
-                        vec3 rippleColor = palette(t, a, b, c, dParam);
-                        
-                        // Apply the Glow Amount (controlled by the if/else above)
-                        rippleColor = mix(rippleColor, vec3(1.0), glowAmount); 
-
-                        float ripplePattern = sin(d * 12.0 - u_time * 2.5) * 0.5 + 0.5;
-                        
-                        // Apply the Opacity (controlled by the if/else above)
-                        color += rippleColor * ripplePattern * influence * opacity;
-                        
-                        // Swirl
-                        float swirl = fbm(st * 3.0 + mouse * 2.0 - u_time * 0.1);
-                        color += swirl * influence * 0.05;
-
-                        gl_FragColor = vec4(color, 1.0);
-                    }
-                `,
-            });
-
-            const geometry = new THREE.PlaneGeometry(20, 20, 1, 1);
-            mesh = new THREE.Mesh(geometry, material);
-            scene.add(mesh);
-
-            document.addEventListener('mousemove', (e) => {
-                targetX = e.clientX / window.innerWidth;
-                targetY = 1.0 - (e.clientY / window.innerHeight);
-            });
-
-            function animate() {
-                requestAnimationFrame(animate);
-                
-                // Smooth mouse following
-                mouseX += (targetX - mouseX) * 0.05;
-                mouseY += (targetY - mouseY) * 0.05;
-                
-                material.uniforms.u_time.value += 0.01;
-                material.uniforms.u_mouse.value.set(mouseX, mouseY);
-                
-                renderer.render(scene, camera);
-            }
-            animate();
-
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                material.uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
-            });
-        }
-
-        function setTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            isDark = theme === 'dark';
-            
-            if (mesh) {
-                gsap.to(mesh.material.uniforms.u_dark, {
-                    value: isDark ? 1.0 : 0.0,
-                    duration: 1.2,
-                    ease: "power2.inOut"
-                });
-            }
-            
-            document.querySelectorAll('.theme-toggle').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`theme-${theme}`).classList.add('active');
-        }
-
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            setTheme(savedTheme);
-        }
-
-        function animateElements() {
-            gsap.fromTo('.fade-in', 
-                { opacity: 0, y: 30 },
-                { 
-                    opacity: 1, 
-                    y: 0, 
-                    duration: 1,
-                    stagger: 0.08,
-                    ease: "power3.out"
+        // === 1. BACKGROUND SHADER (LOCKED - NO CHANGES) ===
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                u_time: { value: 0 },
+                u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
+                u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+                u_dark: { value: isDark ? 1.0 : 0.0 },
+                u_scroll: { value: 0.0 }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
                 }
-            );
-        }
+            `,
+            fragmentShader: `
+                uniform float u_time;
+                uniform vec2 u_mouse;
+                uniform vec2 u_resolution;
+                uniform float u_dark;
+                uniform float u_scroll;
+                varying vec2 vUv;
 
-        const API_BASE = './api';
+                float random(vec2 st) { return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123); }
+                float grain(vec2 uv) { return random(uv + mod(u_time, 10.0)) * 0.08; }
+                float noise(vec2 st) {
+                    vec2 i = floor(st); vec2 f = fract(st);
+                    float a = random(i); float b = random(i + vec2(1.0, 0.0));
+                    float c = random(i + vec2(0.0, 1.0)); float d = random(i + vec2(1.0, 1.0));
+                    vec2 u = f * f * (3.0 - 2.0 * f);
+                    return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+                }
+                float fbm(vec2 st) {
+                    float value = 0.0; float amp = 0.5;
+                    for (int i = 0; i < 4; i++) { value += amp * noise(st); st *= 2.0; amp *= 0.5; }
+                    return value;
+                }
+                vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d) { return a + b * cos(6.28318 * (c * t + d)); }
 
-        async function loadProfile() {
-            try {
-                const response = await fetch(`${API_BASE}/profile_api.php`);
-                const profile = await response.json();
-                
-                document.getElementById('professional-title').textContent = profile.professional_title;
-                document.getElementById('bio-text').textContent = profile.bio;
-                
-                document.getElementById('contact-info').innerHTML = `
-                    <p class="text-secondary">Email</p>
-                    <p class="mb-4">janusdominic0@gmail.com</p>
-                    <p class="text-secondary">Phone</p>
-                    <p class="mb-4">0994-873-9200</p>
-                    <p class="text-secondary">Social</p>
-                    <a href="${profile.facebook_url}" target="_blank" class="link-arrow">Facebook →</a>
-                `;
-            } catch (error) {
-                console.error('Error loading profile:', error);
-            }
-        }
+                void main() {
+                    vec2 st = vUv;
+                    float aspect = u_resolution.x / u_resolution.y;
+                    st.x *= aspect;
+                    st.y -= u_scroll * 0.5; 
 
-        async function loadProjects() {
-            try {
-                const response = await fetch(`${API_BASE}/projects_api.php`);
-                const projects = await response.json();
-                
-                document.getElementById('projects-grid').innerHTML = projects.map(project => `
-                    <div class="project-card p-6 rounded fade-in">
-                        <h3 class="text-lg font-light mb-2">${project.title}</h3>
-                        <p class="text-sm text-secondary mb-4 font-light">${project.description}</p>
-                        <div class="flex gap-4 text-xs">
-                            <a href="${project.project_url}" target="_blank" class="link-arrow">View Live →</a>
-                            <a href="${project.repo_url}" target="_blank" class="link-arrow">Source Code →</a>
-                        </div>
-                    </div>
-                `).join('');
-                animateElements();
-            } catch (error) {
-                console.error('Error loading projects:', error);
-            }
-        }
+                    vec2 mouse = u_mouse;
+                    mouse.x *= aspect;
 
-        async function loadSkills() {
-            try {
-                const response = await fetch(`${API_BASE}/skills_api.php`);
-                const skills = await response.json();
-                
-                document.getElementById('skills-container').innerHTML = skills.map(skill => `
-                    <span class="skill-tag px-4 py-2 text-xs rounded fade-in">${skill.name}</span>
-                `).join('');
-                animateElements();
-            } catch (error) {
-                console.error('Error loading skills:', error);
-            }
-        }
+                    vec2 q = vec2(0.); q.x = fbm(st + 0.00 * u_time); q.y = fbm(st + vec2(1.0));
+                    vec2 r = vec2(0.); r.x = fbm(st + 1.0 * q + vec2(1.7, 9.2) + 0.15 * u_time);
+                    r.y = fbm(st + 1.0 * q + vec2(8.3, 2.8) + 0.126 * u_time);
+                    float f = fbm(st + r);
 
-        async function loadExperience() {
-            try {
-                const response = await fetch(`${API_BASE}/experience_api.php?duration=true`);
-                const experiences = await response.json();
-                
-                document.getElementById('experience-list').innerHTML = experiences.map(exp => `
-                    <div class="info-card p-5 rounded fade-in">
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                <h4 class="font-light">${exp.position}</h4>
-                                <p class="text-sm text-secondary">${exp.company}</p>
-                            </div>
-                            <span class="text-xs text-secondary">${exp.duration_text || ''}</span>
-                        </div>
-                        <p class="text-xs text-secondary mt-2">${exp.description || ''}</p>
-                    </div>
-                `).join('');
-                animateElements();
-            } catch (error) {
-                console.error('Error loading experience:', error);
-            }
-        }
+                    vec3 goldBg = mix(vec3(0.1, 0.08, 0.06), vec3(0.2, 0.18, 0.15), clamp(f*f*4.0, 0.0, 1.0)); 
+                    vec3 cyanBg = mix(vec3(0.098, 0.094, 0.231), vec3(0.439, 0.537, 0.576), clamp(f*f*4.0, 0.0, 1.0));
+                    vec3 color = mix(goldBg, cyanBg, u_dark);
 
-        async function loadEducation() {
-            try {
-                const response = await fetch(`${API_BASE}/education_api.php`);
-                const education = await response.json();
-                
-                document.getElementById('education-list').innerHTML = education.map(edu => `
-                    <div class="info-card p-5 rounded fade-in">
-                        <h4 class="font-light">${edu.degree}</h4>
-                        <p class="text-sm text-secondary">Western Mindanao State University</p>
-                        ${edu.field_of_study ? `<p class="text-xs text-secondary mt-1">${edu.field_of_study}</p>` : ''}
-                    </div>
-                `).join('');
-                animateElements();
-            } catch (error) {
-                console.error('Error loading education:', error);
-            }
-        }
-
-        async function loadCertifications() {
-            try {
-                const response = await fetch(`${API_BASE}/certifications_api.php`);
-                const certs = await response.json();
-                
-                document.getElementById('certifications-list').innerHTML = certs.map(cert => `
-                    <div class="info-card p-5 rounded fade-in">
-                        <h4 class="font-light">${cert.title}</h4>
-                        <p class="text-sm text-secondary">${cert.issuing_organization}</p>
-                        ${cert.credential_url ? `<a href="${cert.credential_url}" target="_blank" class="text-xs link-arrow mt-2 inline-block">View Credential →</a>` : ''}
-                    </div>
-                `).join('');
-                animateElements();
-            } catch (error) {
-                console.error('Error loading certifications:', error);
-            }
-        }
-
-        async function loadAchievements() {
-            try {
-                const response = await fetch(`${API_BASE}/achievements_api.php`);
-                const achievements = await response.json();
-                
-                document.getElementById('achievements-list').innerHTML = achievements.map(ach => `
-                    <div class="info-card p-5 rounded fade-in">
-                        <h4 class="font-light">${ach.title}</h4>
-                        <p class="text-sm text-secondary">${ach.issuing_organization || ''}</p>
-                        <p class="text-xs text-secondary mt-2">${ach.description || ''}</p>
-                    </div>
-                `).join('');
-                animateElements();
-            } catch (error) {
-                console.error('Error loading achievements:', error);
-            }
-        }
-
-        function setupContactForm() {
-            const form = document.getElementById('contact-form');
-            const formMessage = document.getElementById('form-message');
-
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const formData = new FormData(form);
-                const data = Object.fromEntries(formData.entries());
-
-                try {
-                    const response = await fetch(`${API_BASE}/contacts_api.php`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-
-                    const result = await response.json();
-
-                    if (response.status === 201) {
-                        formMessage.textContent = 'Message sent successfully!';
-                        formMessage.className = 'p-3 text-sm rounded bg-green-100 text-green-800';
-                        form.reset();
+                    vec2 diff = st - mouse; diff.y *= 1.85;
+                    float d = length(diff); float influence = smoothstep(0.8, 0.0, d);
+                    
+                    vec3 a, b, c, dParam; 
+                    float glowAmount;
+                    if (u_dark > 0.5) {
+                         a = vec3(0.5); b = vec3(0.5); c = vec3(1.0); dParam = vec3(0.631, 0.760, 0.741); 
+                         glowAmount = 1.5;
                     } else {
-                        throw new Error(result.message);
+                         a = vec3(0.5); b = vec3(0.5); c = vec3(1.0); dParam = vec3(0.50, 0.40, 0.20); 
+                         glowAmount = 1.5;
                     }
-                } catch (error) {
-                    formMessage.textContent = error.message;
-                    formMessage.className = 'p-3 text-sm rounded bg-red-100 text-red-800';
-                } finally {
-                    formMessage.classList.remove('hidden');
-                    setTimeout(() => formMessage.classList.add('hidden'), 5000);
+
+                    vec3 rippleColor = palette(d * 3.0 - u_time * 0.5, a, b, c, dParam);
+                    rippleColor = mix(rippleColor, vec3(1.0), glowAmount);
+                    color += rippleColor * (sin(d * 12.0 - u_time * 2.5) * 0.5 + 0.5) * influence * 0.04;
+                    color += vec3(grain(vUv) * 0.6);
+
+                    gl_FragColor = vec4(color, 1.0);
                 }
+            `,
+        });
+
+        const geometry = new THREE.PlaneGeometry(20, 20, 1, 1);
+        mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        // === 2. CREATE OBJECT ===
+        createHeroObject();
+        
+        // === 3. LIGHTS ===
+        lights.ambient = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(lights.ambient);
+        lights.point = new THREE.PointLight(0xffffff, 2);
+        lights.point.position.set(5, 5, 5);
+        scene.add(lights.point);
+        lights.rim = new THREE.SpotLight(0xffffff, 5, 20, 0.5, 0.5, 1);
+        lights.rim.position.set(-2, 4, 0);
+        lights.rim.lookAt(3.5, 0, 0);
+        scene.add(lights.rim);
+
+        updateHeroTheme(isDark); 
+        
+        // === 4. ANIMATION SETUP ===
+        setupScrollAnimation();
+
+        // === 5. ANIMATION LOOP ===
+        function animate() {
+            requestAnimationFrame(animate);
+            mouseX += (targetX - mouseX) * 0.05;
+            mouseY += (targetY - mouseY) * 0.05;
+            material.uniforms.u_time.value += 0.01;
+            material.uniforms.u_mouse.value.set(mouseX, mouseY);
+
+            if (heroGroup) {
+                const time = material.uniforms.u_time.value;
+                // Spin
+                heroGroup.children[0].rotation.y = time * 0.05; 
+                heroGroup.children[0].rotation.z = Math.sin(time * 0.5) * 0.05; 
+                // Rings
+                const ringSystem = heroGroup.children[1];
+                ringSystem.children[0].rotation.z = time * 0.1;
+                ringSystem.children[1].rotation.z = time * -0.02;
+                ringSystem.children[2].rotation.z = time * 0.05;
+                // Float
+                heroGroup.position.y += Math.sin(time) * 0.002;
+            }
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        document.addEventListener('mousemove', e => {
+            targetX = e.clientX / window.innerWidth;
+            targetY = 1.0 - (e.clientY / window.innerHeight);
+        });
+        window.addEventListener('scroll', () => {
+            material.uniforms.u_scroll.value = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+        });
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            material.uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
+            ScrollTrigger.refresh();
+        });
+    }
+
+    // === CINEMATIC INTRO ZOOM ===
+    window.playIntroAnimation = function() {
+        // 1. Fade out the preloader (handled in app.js), but we handle the 3D here.
+        
+        // 2. Hyper-Zoom the Camera
+        // Goes from z=15 (Far) to z=5 (Normal)
+        gsap.to(camera.position, {
+            z: 5,
+            duration: 2.5,
+            ease: "expo.out", // Fast start, slow stop
+            delay: 0.2
+        });
+
+        // 3. Spin the Hero Object wildly for effect
+        if(heroGroup) {
+            gsap.from(heroGroup.rotation, {
+                y: Math.PI * 1, // Spin 180 degrees
+                z: 0.5,
+                duration: 2.5,
+                ease: "expo.out"
             });
         }
+    };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initWebGL();
-            loadTheme();
-            loadProfile();
-            loadProjects();
-            loadSkills();
-            loadExperience();
-            loadEducation();
-            loadCertifications();
-            loadAchievements();
-            setupContactForm();
-            animateElements();
-            document.getElementById('footer-year').textContent = new Date().getFullYear();
+    // === OBJECT CREATION ===
+    function createHeroObject() {
+        heroGroup = new THREE.Group();
+
+        // A. PLANET
+        heroMaterials.planet = new THREE.MeshPhysicalMaterial({
+            roughness: 0.15, transmission: 0.6, thickness: 1.5, flatShading: true
         });
-    </script>
+        const planet = new THREE.Mesh(new THREE.IcosahedronGeometry(1.2, 1), heroMaterials.planet);
+        heroGroup.add(planet); // Index 0
 
-    <div id="cursor"></div>
-
-    <script>
-        // Custom Cursor Logic
-        const cursor = document.getElementById('cursor');
+        // B. RINGS
+        const ringGroup = new THREE.Group();
+        ringGroup.rotation.x = Math.PI / 2.5;
+        ringGroup.rotation.y = Math.PI / 12;
         
-    </script>
+        // Inner
+        heroMaterials.ringInner = new THREE.MeshBasicMaterial({ wireframe: true, side: THREE.DoubleSide, transparent: true });
+        ringGroup.add(new THREE.Mesh(new THREE.RingGeometry(1.6, 2.2, 64, 2), heroMaterials.ringInner));
 
+        // Particles
+        const pGeo = new THREE.BufferGeometry();
+        const pPos = new Float32Array(1200);
+        for(let i=0; i<1200; i+=3) {
+            const a = Math.random() * Math.PI * 2;
+            const r = 2.3 + Math.random() * 0.8;
+            pPos[i] = Math.cos(a) * r; pPos[i+1] = Math.sin(a) * r; pPos[i+2] = (Math.random()-0.5)*0.1;
+        }
+        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+        heroMaterials.particles = new THREE.PointsMaterial({ size: 0.03, transparent: true });
+        ringGroup.add(new THREE.Points(pGeo, heroMaterials.particles));
+
+        // Outer
+        heroMaterials.ringOuter = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, transparent: true });
+        ringGroup.add(new THREE.Mesh(new THREE.RingGeometry(3.3, 3.35, 128), heroMaterials.ringOuter));
+
+        heroGroup.add(ringGroup); // Index 1
+        scene.add(heroGroup);
+        
+        // Initial Pos
+        heroGroup.position.set(3.5, 0, 0);
+    }
+
+    // === SCROLL ANIMATION (GHOST PLANET EFFECT) ===
+    function setupScrollAnimation() {
+        if (window.innerWidth < 1024) {
+            heroGroup.position.set(1, 3, -5);
+            heroGroup.scale.set(0.6, 0.6, 0.6);
+            return; 
+        }
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        let tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1.5
+            }
+        });
+
+        // 1. Move to Left & Back (Projects)
+        tl.to(heroGroup.position, { x: -3.5, z: -2, y: 0.5, ease: "power1.inOut" }, 0.1);
+
+        // 2. Move to Center (Info)
+        tl.to(heroGroup.position, { x: 0, z: -4, y: -1.0, ease: "power1.inOut" }, 0.5);
+
+        // === NEW: PHASE OUT CORE ===
+        // At 40% scroll, shrink the core (Index 0) to nothing
+        tl.to(heroGroup.children[0].scale, { x: 0, y: 0, z: 0, ease: "power2.in" }, 0.4);
+
+        // 3. Move Up (Contact)
+        tl.to(heroGroup.position, { x: 0, z: 0, y: 1.5, ease: "power1.inOut" }, 0.9);
+        
+        // === NEW: PHASE IN CORE ===
+        // At 85% scroll, pop the core back in for the "Sun" finale
+        tl.to(heroGroup.children[0].scale, { x: 1, y: 1, z: 1, ease: "elastic.out(1, 0.5)" }, 0.85);
+
+        // Rotation
+        tl.to(heroGroup.rotation, { y: Math.PI * 2, x: 0.5, ease: "none" }, 0);
+    }
+
+    function updateHeroTheme(dark) {
+        if (!heroMaterials.planet) return;
+        if (dark) {
+            heroMaterials.planet.color.setHex(0x0f172a); 
+            heroMaterials.planet.emissive.setHex(0x06b6d4);
+            heroMaterials.planet.emissiveIntensity = 0.2; 
+            heroMaterials.planet.transmission = 0.6;
+            heroMaterials.ringInner.color.setHex(0x0891b2); heroMaterials.ringInner.opacity = 0.3;
+            heroMaterials.particles.color.setHex(0x67e8f9); heroMaterials.particles.opacity = 0.8;
+            heroMaterials.ringOuter.color.setHex(0xffffff); heroMaterials.ringOuter.opacity = 0.5;
+            lights.point.color.setHex(0xccfbf1);
+            lights.rim.color.setHex(0x06b6d4);
+        } else {
+            heroMaterials.planet.color.setHex(0x3f2108);
+            heroMaterials.planet.emissive.setHex(0xff5500);
+            heroMaterials.planet.emissiveIntensity = 0.5;
+            heroMaterials.planet.transmission = 0.3;
+            heroMaterials.ringInner.color.setHex(0xffaa00); heroMaterials.ringInner.opacity = 0.2;
+            heroMaterials.particles.color.setHex(0xffd700); heroMaterials.particles.opacity = 0.8;
+            heroMaterials.ringOuter.color.setHex(0xcc8800); heroMaterials.ringOuter.opacity = 0.4;
+            lights.point.color.setHex(0xffaa66);
+            lights.rim.color.setHex(0xffd700);
+        }
+    }
+
+    function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        isDark = theme === 'dark';
+        if (mesh) {
+            gsap.to(mesh.material.uniforms.u_dark, { value: isDark ? 1.0 : 0.0, duration: 1.2, ease: "power2.inOut" });
+        }
+        updateHeroTheme(isDark);
+        document.querySelectorAll('.theme-toggle').forEach(btn => btn.classList.remove('active'));
+        const btnId = theme === 'light' ? 'theme-light' : 'theme-dark';
+        if(document.getElementById(btnId)) document.getElementById(btnId).classList.add('active');
+    }
+
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(savedTheme);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initWebGL();
+        loadTheme();
+    });
+</script>
+    
+    <script src="app.js"></script>
 </body>
 </html>

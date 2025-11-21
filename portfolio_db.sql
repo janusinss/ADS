@@ -29,8 +29,8 @@ VALUES (
     'Janus Dominic',
     'Full-Stack Developer & Software Engineer',
     'Passionate developer with expertise in building modern web applications. Specializing in PHP, MySQL, JavaScript, and creating seamless user experiences.',
-    'janus.dominic@example.com',
-    '+63 912 345 6789',
+    'janusdominic0@gmail.com',
+    '+63 994 873 9200',
     'https://www.facebook.com/notagirlgamer69',
     'https://i.pravatar.cc/400?img=33'
 );
