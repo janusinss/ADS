@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="fixed top-0 left-0 h-[2px] bg-cyan-500 z-50 transition-all duration-100 ease-out shadow-[0_0_10px_rgba(6,182,212,0.8)]" id="scroll-progress" style="width: 0%"></div>
     <div id="preloader" class="fixed inset-0 z-[9999] bg-[#050505] flex flex-col items-center justify-center font-mono text-xs sm:text-sm text-secondary selection:bg-cyan-500 selection:text-black">
         <div class="w-64 sm:w-80">
             <div class="flex justify-between mb-4 border-b border-gray-800 pb-2 opacity-50">
@@ -37,6 +38,16 @@
         <button id="theme-dark" onclick="setTheme('dark')" class="theme-toggle">DARK</button>
         <button id="theme-light" onclick="setTheme('light')" class="theme-toggle active">WARM</button>
     </div>
+    
+    <button id="mute-btn" onclick="toggleMute()">SND</button>
+    <script>
+        function toggleMute() {
+            if (typeof AudioEngine !== 'undefined') {
+                AudioEngine.isMuted = !AudioEngine.isMuted;
+                document.getElementById('mute-btn').classList.toggle('muted');
+            }
+        }
+    </script>
 
     <div class="content-wrapper">
         <header class="px-6 lg:px-16 py-8 lg:py-12 min-h-screen flex flex-col justify-center relative z-10">
@@ -298,8 +309,18 @@
             targetX = e.clientX / window.innerWidth;
             targetY = 1.0 - (e.clientY / window.innerHeight);
         });
+        // Find your existing window.addEventListener('scroll', ...) inside initWebGL
         window.addEventListener('scroll', () => {
-            material.uniforms.u_scroll.value = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+            // 1. Existing Shader Logic
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const scrollPct = window.scrollY / maxScroll;
+            material.uniforms.u_scroll.value = scrollPct;
+
+            // 2. NEW: Update Progress Bar
+            const progressBar = document.getElementById('scroll-progress');
+            if (progressBar) {
+                progressBar.style.width = `${scrollPct * 100}%`;
+            }
         });
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;

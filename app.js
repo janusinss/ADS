@@ -4,15 +4,20 @@ gsap.registerPlugin(ScrollTrigger);
 let lenis; // Global scroll instance
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Start Preloader Animation
+    // 1. Start Boot Sequence
     simulateLoading();
 
-    // 2. Init Smooth Scroll (Lenis)
+    // 2. Init Smooth Scroll & Physics
     initLenis();
-
     initSmoothNav();
+    
+    // 3. Init UI Effects
+    initCustomCursor();
+    initMagneticButtons(); // NEW: Magnetic Physics
 
-    // 3. Load Data
+    initAudioInteractions();
+
+    // 4. Load Data
     loadProfile();
     loadProjects();
     loadSkills();
@@ -22,11 +27,100 @@ document.addEventListener('DOMContentLoaded', () => {
     loadGeneric('achievements_api.php', 'achievements-list', renderSimpleCard);
     setupContactForm();
 
-    // 4. Init UI Effects
-    initCustomCursor();
-    
     document.getElementById('footer-year').textContent = new Date().getFullYear();
 });
+
+// === VELOCITY SKEW & SMOOTH SCROLL ===
+function initLenis() {
+    lenis = new Lenis({
+        lerp: 0.08, // Smoothness (lower = smoother/heavier)
+        smoothWheel: true
+    });
+
+    // The Skew Effect
+    const content = document.querySelector('.content-wrapper');
+    let skew = 0;
+
+    lenis.on('scroll', ({ velocity }) => {
+        // Update ScrollTrigger
+        ScrollTrigger.update();
+
+        // Calculate Skew based on scroll speed
+        // velocity is usually between -50 and 50 during fast scrolls
+        const targetSkew = velocity * 0.15; 
+        
+        // Smoothly interpolate skew (avoid jitter)
+        skew += (targetSkew - skew) * 0.1;
+        
+        // Apply the warp
+        // Force hardware acceleration with translate3d
+        content.style.transform = `skewY(${skew}deg) translate3d(0,0,0)`;
+    });
+
+    gsap.ticker.add((time) => {
+        lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+}
+
+// === MAGNETIC BUTTONS ===
+function initMagneticButtons() {
+    // Wrap nav items and buttons to give them physics
+    const targets = document.querySelectorAll('.nav-item, .btn-minimal, .theme-toggle');
+    
+    targets.forEach(el => {
+        // Create a larger hit-area for the magnet effect
+        const wrap = document.createElement('div');
+        wrap.className = 'magnetic-wrap';
+        el.parentNode.insertBefore(wrap, el);
+        wrap.appendChild(el);
+        
+        // Mouse move listener
+        wrap.addEventListener('mousemove', (e) => {
+            const rect = wrap.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            
+            // Move the button towards the mouse (Magnetic Pull)
+            // Strength = 0.5 (Higher = stronger pull)
+            gsap.to(el, {
+                x: x * 0.5,
+                y: y * 0.5,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+
+        // Mouse leave listener (Snap back)
+        wrap.addEventListener('mouseleave', () => {
+            gsap.to(el, {
+                x: 0,
+                y: 0,
+                duration: 0.8, // Bouncy return
+                ease: "elastic.out(1, 0.3)"
+            });
+        });
+    });
+}
+
+// === NAVIGATION SMOOTH SCROLL ===
+function initSmoothNav() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault(); 
+            const targetId = this.getAttribute('href');
+            const targetElem = document.querySelector(targetId);
+            
+            if (targetElem && lenis) {
+                lenis.scrollTo(targetElem, {
+                    offset: 0,
+                    duration: 1.5, 
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) 
+                });
+            }
+        });
+    });
+}
 
 // === BOOT SEQUENCE ===
 function simulateLoading() {
@@ -34,7 +128,6 @@ function simulateLoading() {
     const logs = document.getElementById('boot-logs');
     const preloader = document.getElementById('preloader');
     
-    // Tech jargon for the creative dev vibe
     const bootText = [
         "INITIALIZING CORE MODULES...",
         "MOUNTING VIRTUAL DOM...",
@@ -50,22 +143,18 @@ function simulateLoading() {
     let width = 0;
     let logIndex = 0;
 
-    // Function to add a log line
     const addLog = (text) => {
         const p = document.createElement('div');
         p.innerHTML = `<span class="text-cyan-500">>></span> ${text}`;
         logs.appendChild(p);
-        // Keep only last 5 logs
         if (logs.children.length > 5) logs.removeChild(logs.firstChild);
     };
 
     const interval = setInterval(() => {
-        width += Math.random() * 2; // Random speed
+        width += Math.random() * 2;
         if (width > 100) width = 100;
-        
         bar.style.width = width + '%';
 
-        // Add random log every ~15% progress
         if (width > (logIndex + 1) * 12 && logIndex < bootText.length) {
             addLog(bootText[logIndex]);
             logIndex++;
@@ -74,72 +163,109 @@ function simulateLoading() {
         if (width === 100) {
             clearInterval(interval);
             addLog("ACCESS GRANTED.");
-            
-            // TRIGGER THE CINEMATIC REVEAL
             setTimeout(() => {
-                // 1. Slide Preloader Away (Curtain effect)
                 gsap.to(preloader, {
                     yPercent: -100,
                     duration: 1,
                     ease: "power4.inOut"
                 });
-
-                // 2. Trigger the 3D Camera Zoom (in index.html)
                 if (window.playIntroAnimation) window.playIntroAnimation();
-
-                // 3. Animate Elements in
                 animateItems('.fade-in');
                 scrambleText(document.querySelector('h1'));
-
-            }, 500); // Slight pause before reveal
+            }, 500);
         }
-    }, 20); // Speed of loader
-
-    
+    }, 20);
 }
 
-// === SMOOTH SCROLL (LENIS) ===
-function initLenis() {
-    lenis = new Lenis({
-        lerp: 0.08, // Smoothness (lower = smoother)
-        smoothWheel: true
-    });
-
-    // Sync Lenis with GSAP ScrollTrigger
-    lenis.on('scroll', ScrollTrigger.update);
-    gsap.ticker.add((time) => {
-        lenis.raf(time * 1000);
-    });
-    gsap.ticker.lagSmoothing(0);
-}
-
-// === 3D CARD TILT EFFECT ===
+// === 3D CARD TILT ===
+// === 1. UPGRADED 3D CARD TILT (WITH DEEP PARALLAX) ===
 function initTilt(element) {
+    const imageContainer = element.querySelector('.overflow-hidden');
+    const image = element.querySelector('img');
+
     element.addEventListener('mousemove', (e) => {
         const rect = element.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         
-        // Calculate rotation (Max 10 degrees)
+        // Calculate percentages (-0.5 to 0.5)
         const xPct = (x / rect.width) - 0.5;
         const yPct = (y / rect.height) - 0.5;
-        const xRot = yPct * -10; 
-        const yRot = xPct * 10;
+        
+        // 1. Tilt the Card (Container)
+        // Rotate LESS for a heavier feel (Max 5deg)
+        const xRot = yPct * -5; 
+        const yRot = xPct * 5;
 
         gsap.to(element, {
-            transform: `rotateX(${xRot}deg) rotateY(${yRot}deg) scale(1.02)`,
+            transform: `perspective(1000px) rotateX(${xRot}deg) rotateY(${yRot}deg) scale(1.02)`,
             duration: 0.1,
             ease: "power1.out"
         });
+
+        // 2. Parallax the Image (The "Window" Effect)
+        // Move image OPPOSITE to the mouse to create depth
+        if (image) {
+            gsap.to(image, {
+                x: (xPct * -15), // Shift X
+                y: (yPct * -15), // Shift Y
+                scale: 1.1,      // Keep it scaled up so we don't see edges
+                duration: 0.1,
+                ease: "power1.out"
+            });
+        }
     });
 
     element.addEventListener('mouseleave', () => {
+        // Reset Card
         gsap.to(element, {
-            transform: `rotateX(0) rotateY(0) scale(1)`,
-            duration: 0.5,
-            ease: "elastic.out(1, 0.5)"
+            transform: `perspective(1000px) rotateX(0) rotateY(0) scale(1)`,
+            duration: 0.6,
+            ease: "elastic.out(1, 0.6)"
         });
+
+        // Reset Image
+        if (image) {
+            gsap.to(image, {
+                x: 0,
+                y: 0,
+                scale: 1,
+                duration: 0.6,
+                ease: "power2.out"
+            });
+        }
     });
+}
+
+// === 2. NEURAL TEXT (RE-SCRAMBLE ON HOVER) ===
+function animateItems(selector) {
+    ScrollTrigger.batch(selector, {
+        onEnter: batch => {
+            gsap.to(batch, { opacity: 1, y: 0, stagger: 0.1, duration: 0.8, ease: "power3.out" });
+            
+            batch.forEach(el => { 
+                // 1. Scramble on Enter (Existing)
+                if (el.hasAttribute('data-scramble')) {
+                    scrambleText(el);
+                    
+                    // 2. NEW: Scramble on Hover (Interactive)
+                    el.addEventListener('mouseenter', () => {
+                        scrambleText(el);
+                        // Optional: Play a tiny glitch sound if you want
+                        // if(AudioEngine) AudioEngine.playGlitch(); 
+                    });
+                }
+            });
+        },
+        start: "top 90%",
+        once: true
+    });
+    
+    // Also attach to Main Title separately since it's not in a batch
+    const mainTitle = document.querySelector('h1[data-scramble]');
+    if(mainTitle) {
+        mainTitle.addEventListener('mouseenter', () => scrambleText(mainTitle));
+    }
 }
 
 // === HACKER TEXT SCRAMBLE ===
@@ -148,18 +274,13 @@ function scrambleText(element) {
     const finalText = element.innerText;
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$%^&*';
     let iterations = 0;
-
     const interval = setInterval(() => {
-        element.innerText = finalText
-            .split('')
-            .map((letter, index) => {
-                if (index < iterations) return finalText[index]; // Lock in correct char
-                return chars[Math.floor(Math.random() * chars.length)]; // Random char
-            })
-            .join('');
-
+        element.innerText = finalText.split('').map((letter, index) => {
+            if (index < iterations) return finalText[index];
+            return chars[Math.floor(Math.random() * chars.length)];
+        }).join('');
         if (iterations >= finalText.length) clearInterval(interval);
-        iterations += 1 / 3; // Speed of decoding
+        iterations += 1 / 3;
     }, 30);
 }
 
@@ -168,7 +289,6 @@ function initCustomCursor() {
     const cursor = document.getElementById('cursor');
     const mouse = { x: -100, y: -100 };
     const pos = { x: -100, y: -100 };
-
     document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
 
     gsap.ticker.add(() => {
@@ -178,9 +298,8 @@ function initCustomCursor() {
         cursor.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0) translate(-50%, -50%)`;
     });
 
-    // Hover listeners (using delegation for dynamic content)
     document.body.addEventListener('mouseover', (e) => {
-        if (e.target.closest('a, button, input, textarea, .project-card')) {
+        if (e.target.closest('a, button, input, textarea, .project-card, .magnetic-wrap')) {
             cursor.classList.add('hovered');
         } else {
             cursor.classList.remove('hovered');
@@ -188,15 +307,12 @@ function initCustomCursor() {
     });
 }
 
-// === ANIMATION HELPER ===
+// === ANIMATION HELPERS ===
 function animateItems(selector) {
     ScrollTrigger.batch(selector, {
         onEnter: batch => {
             gsap.to(batch, { opacity: 1, y: 0, stagger: 0.1, duration: 0.8, ease: "power3.out" });
-            // Decode text if it has the attribute
-            batch.forEach(el => {
-                if (el.hasAttribute('data-scramble')) scrambleText(el);
-            });
+            batch.forEach(el => { if (el.hasAttribute('data-scramble')) scrambleText(el); });
         },
         start: "top 90%",
         once: true
@@ -212,18 +328,10 @@ async function loadProfile() {
         const data = await res.json();
         document.getElementById('professional-title').innerText = data.professional_title;
         document.getElementById('bio-text').innerText = data.bio;
-        
-        // Populate contact
         document.getElementById('contact-info').innerHTML = `
-            <div class="flex justify-between border-b border-gray-500/30 pb-2">
-                <span>EMAIL</span> <span>${data.email}</span>
-            </div>
-            <div class="flex justify-between border-b border-gray-500/30 pb-2 pt-2">
-                <span>PHONE</span> <span>${data.phone}</span>
-            </div>
-            <div class="pt-4">
-                <a href="${data.facebook_url}" class="text-cyan-400 hover:text-cyan-300">FACEBOOK LINK_</a>
-            </div>
+            <div class="flex justify-between border-b border-gray-500/30 pb-2"><span>EMAIL</span> <span>${data.email}</span></div>
+            <div class="flex justify-between border-b border-gray-500/30 pb-2 pt-2"><span>PHONE</span> <span>${data.phone}</span></div>
+            <div class="pt-4"><a href="${data.facebook_url}" class="text-cyan-400 hover:text-cyan-300">FACEBOOK LINK_</a></div>
         `;
     } catch(e) {}
 }
@@ -232,9 +340,7 @@ async function loadProjects() {
     try {
         const res = await fetch(`${API_BASE}/projects_api.php`);
         const data = await res.json();
-        const container = document.getElementById('projects-grid');
-        
-        container.innerHTML = data.map(p => `
+        document.getElementById('projects-grid').innerHTML = data.map(p => `
             <div class="project-card p-8 opacity-0 translate-y-8 group">
                 <div class="mb-6 overflow-hidden border-b border-gray-500/20 pb-6">
                      <h3 class="text-3xl font-bold mb-2 group-hover:text-cyan-400 transition-colors">${p.title}</h3>
@@ -247,11 +353,8 @@ async function loadProjects() {
                 </div>
             </div>
         `).join('');
-        
-        // Apply animations & Tilt
         animateItems('.project-card');
         document.querySelectorAll('.project-card').forEach(initTilt);
-        
     } catch(e) {}
 }
 
@@ -259,8 +362,7 @@ async function loadSkills() {
     try {
         const res = await fetch(`${API_BASE}/skills_api.php`);
         const data = await res.json();
-        const container = document.getElementById('skills-container');
-        container.innerHTML = data.map(s => `
+        document.getElementById('skills-container').innerHTML = data.map(s => `
             <div class="skill-tag px-4 py-3 opacity-0 translate-y-4 text-xs font-mono border border-gray-500/30 hover:border-cyan-400 transition-colors cursor-default">
                 ${s.name} <span class="text-cyan-400">// ${s.proficiency}%</span>
             </div>
@@ -269,7 +371,6 @@ async function loadSkills() {
     } catch(e) {}
 }
 
-// Generic Loader
 async function loadGeneric(endpoint, id, renderFn) {
     try {
         const res = await fetch(`${API_BASE}/${endpoint}`);
@@ -279,7 +380,6 @@ async function loadGeneric(endpoint, id, renderFn) {
     } catch(e) {}
 }
 
-// Render Helpers
 const renderExperience = exp => `
     <div class="info-card p-6 opacity-0 translate-y-8 border-l-2 border-transparent hover:border-cyan-400 transition-all">
         <div class="flex justify-between items-baseline mb-2">
@@ -319,21 +419,124 @@ function setupContactForm() {
     });
 }
 
-// === NAVIGATION SMOOTH SCROLL ===
-function initSmoothNav() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault(); // Stop instant jump
-            const targetId = this.getAttribute('href');
-            const targetElem = document.querySelector(targetId);
-            
-            if (targetElem && lenis) {
-                lenis.scrollTo(targetElem, {
-                    offset: 0,
-                    duration: 1.5, // Slower = more dramatic
-                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) // Exponential ease out
-                });
-            }
-        });
+// ... (Keep all your existing code) ...
+
+// === PROCEDURAL AUDIO ENGINE (NO FILES NEEDED) ===
+const AudioEngine = {
+    ctx: null,
+    masterGain: null,
+    isMuted: false,
+
+    init() {
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioContext();
+        this.masterGain = this.ctx.createGain();
+        this.masterGain.gain.value = 0.1; // Keep it subtle (10% volume)
+        this.masterGain.connect(this.ctx.destination);
+    },
+
+    // 1. The "Hover" Blip (High tech chirp)
+    playHover() {
+        if (!this.ctx || this.isMuted) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+
+        // Sound Design: Fast Sine Sweep
+        osc.type = 'sine';
+        const now = this.ctx.currentTime;
+        
+        // Pitch drop (Hi -> Lo)
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.exponentialRampToValueAtTime(300, now + 0.05);
+        
+        // Volume envelope (Click)
+        gain.gain.setValueAtTime(0.5, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+
+        osc.start(now);
+        osc.stop(now + 0.05);
+    },
+
+    // 2. The "Click" Activation (Deep thud + Static)
+    playClick() {
+        if (!this.ctx || this.isMuted) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+
+        osc.type = 'triangle'; // Grittier sound
+        const now = this.ctx.currentTime;
+        
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(40, now + 0.15);
+        
+        gain.gain.setValueAtTime(0.8, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+        osc.start(now);
+        osc.stop(now + 0.15);
+    },
+
+    // 3. The "Theme Switch" Glitch (White Noise Burst)
+    playGlitch() {
+        if (!this.ctx || this.isMuted) return;
+        const bufferSize = this.ctx.sampleRate * 0.1; // 0.1 seconds
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1; // White noise
+        }
+
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+        const gain = this.ctx.createGain();
+        
+        noise.connect(gain);
+        gain.connect(this.masterGain);
+        
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        
+        noise.start();
+    }
+};
+
+// === INITIALIZE AUDIO TRIGGERS ===
+function initAudioInteractions() {
+    // We need a user interaction to start AudioContext (Browser Policy)
+    const startAudio = () => {
+        if (!AudioEngine.ctx) AudioEngine.init();
+        if (AudioEngine.ctx.state === 'suspended') AudioEngine.ctx.resume();
+        document.removeEventListener('click', startAudio);
+        document.removeEventListener('mousemove', startAudio); // Also start on mouse move
+    };
+    document.addEventListener('click', startAudio);
+    document.addEventListener('mousemove', startAudio);
+
+    // Attach Hover Sounds
+    // Use delegation for better performance
+    document.body.addEventListener('mouseenter', (e) => {
+        if (e.target.closest('a, button, .project-card, .magnetic-wrap')) {
+            AudioEngine.playHover();
+        }
+    }, true); // Capture phase to ensure we catch it
+
+    // Attach Click Sounds
+    document.body.addEventListener('click', (e) => {
+        if (e.target.closest('a, button, .theme-toggle')) {
+            AudioEngine.playClick();
+        }
+    });
+    
+    // Attach Glitch Sound to Theme Toggle
+    const toggles = document.querySelectorAll('.theme-toggle');
+    toggles.forEach(btn => {
+        btn.addEventListener('click', () => AudioEngine.playGlitch());
     });
 }
