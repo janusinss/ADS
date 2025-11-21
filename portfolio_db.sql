@@ -180,8 +180,8 @@ CREATE TABLE education (
 
 -- Sample Data
 INSERT INTO education (institution, degree, field_of_study, start_date, end_date, grade, description, location, is_current) VALUES
-('University of the Philippines', 'Bachelor of Science', 'Computer Science', '2019-08-01', '2023-06-15', '3.8 GPA', 'Focused on software engineering, database systems, and web development. Dean\'s Lister for 4 consecutive semesters.', 'Diliman, Quezon City', FALSE),
-('Pasig City Science High School', 'High School Diploma', 'STEM Track', '2015-06-01', '2019-04-01', 'With Honors', 'Specialized in Science, Technology, Engineering, and Mathematics.', 'Pasig City', FALSE);
+('Western Mindanao State University', 'Bachelor of Science', 'Computer Science', '2019-08-01', '2023-06-15', '3.8 GPA', 'Focused on software engineering, database systems, and web development. Dean\'s Lister for 4 consecutive semesters.', 'Diliman, Quezon City', FALSE),
+('Zamboanga National High School West', 'High School Diploma', 'STEM Track', '2015-06-01', '2019-04-01', 'With Honors', 'Specialized in Science, Technology, Engineering, and Mathematics.', 'Pasig City', FALSE);
 
 -- ================================================
 -- 8. CERTIFICATIONS TABLE
