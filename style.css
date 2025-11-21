@@ -1,0 +1,87 @@
+/* style.css */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=JetBrains+Mono:wght@300;400&display=swap');
+
+:root {
+    /* === LIGHT MODE (Warm Beige) === */
+    /* Background: The lightest beige */
+    --bg-color: #f9f8f6; 
+    
+    /* Text: Using the Deep Navy from your dark palette for sharp contrast */
+    --text-main: #19183b; 
+    --text-muted: #708993; 
+    
+    /* Cards: The secondary beige */
+    --card-bg: rgba(239, 233, 227, 0.6); /* #efe9e3 with opacity */
+    --card-hover: rgba(239, 233, 227, 0.9);
+    
+    /* Borders: The darker beige */
+    --border-color: #d9cfc7;
+    --accent: #c9b59c; /* The gold/tan color */
+}
+
+[data-theme="dark"] {
+    /* === DARK MODE (Deep Navy) === */
+    /* Background: Deep Navy */
+    --bg-color: #19183b;
+    
+    /* Text: The lightest mint from your palette */
+    --text-main: #e7f2ef;
+    --text-muted: #a1c2bd;
+    
+    /* Cards: Navy with a touch of Slate */
+    --card-bg: rgba(25, 24, 59, 0.7); 
+    --card-hover: rgba(112, 137, 147, 0.3); /* #708993 low opacity */
+    
+    /* Borders: Slate Blue */
+    --border-color: rgba(112, 137, 147, 0.3);
+    --accent: #a1c2bd; /* Teal */
+}
+
+/* Update body to use these new variables */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+}
+
+/* TYPOGRAPHY AS UI */
+h1, h2, h3 {
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+}
+
+/* DESTROYING THE CARDS */
+.card-glass, .project-card, .info-card {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    border-left: 1px solid rgba(128, 128, 128, 0.2) !important; /* Minimalist alignment line */
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 2rem !important;
+    margin-bottom: 4rem;
+    transition: all 0.3s ease;
+}
+
+/* THE HOVER EFFECT: Text Glitch/Shift */
+.card-glass:hover {
+    transform: translateX(10px); /* Slide right instead of pop up */
+    border-left-color: var(--accent) !important;
+}
+
+/* BUTTONS -> JUST TEXT */
+.btn-primary, .btn-link {
+    background: transparent;
+    border: 1px solid var(--text-main);
+    color: var(--text-main);
+    border-radius: 0; /* Square edges */
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+}
+
+.btn-primary:hover, .btn-link:hover {
+    background: var(--text-main);
+    color: var(--bg-color);
+    box-shadow: none;
+}
