@@ -4,14 +4,11 @@
     /* === WARM MODE (Molten Core) === */
     --text-primary: #fff7ed; 
     --text-secondary: #fdba74; 
-    
     --card-bg: rgba(66, 32, 6, 0.3); 
     --card-hover: rgba(146, 64, 14, 0.4); 
     --border-color: rgba(251, 191, 36, 0.3); 
-    
-    /* THEME ACCENT: GOLD/AMBER */
     --accent: #fbbf24; 
-    --accent-dim: rgba(251, 191, 36, 0.2); /* Low opacity version */
+    --accent-dim: rgba(251, 191, 36, 0.2);
     --cursor-color: #f59e0b; 
     --btn-text-hover: #451a03; 
 }
@@ -20,25 +17,21 @@
     /* === DARK MODE (Cyber Void) === */
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
-    
     --card-bg: rgba(15, 23, 42, 0.4);
     --card-hover: rgba(30, 41, 59, 0.6);
     --border-color: rgba(255, 255, 255, 0.15);
-    
-    /* THEME ACCENT: CYAN */
     --accent: #22d3ee; 
     --accent-dim: rgba(34, 211, 238, 0.2);
     --cursor-color: #67e8f9;
     --btn-text-hover: #020617; 
 }
 
-/* === LENIS SMOOTH SCROLL === */
+/* === LENIS & CORE === */
 html.lenis { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto; }
 .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
 .lenis.lenis-stopped { overflow: hidden; }
 
-/* === CORE STYLES === */
 * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
 
 body {
@@ -49,100 +42,55 @@ body {
     overflow-x: hidden;
 }
 
-/* TYPOGRAPHY */
+/* === TYPOGRAPHY === */
 h1, h2, h3, h4 { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
 .font-mono { font-family: 'JetBrains Mono', monospace; }
-
 h1[data-scramble] { text-shadow: 0 0 20px rgba(0,0,0,0.5); }
 
 .section-title {
-    font-size: 4rem;
-    line-height: 1;
-    font-weight: 700;
-    margin-bottom: 3rem;
-    opacity: 0.15; 
-    transition: opacity 0.5s;
+    font-size: 4rem; line-height: 1; font-weight: 700; margin-bottom: 3rem;
+    opacity: 0.15; transition: opacity 0.5s;
 }
 .section-title:hover { opacity: 0.8; }
 
-/* === UTILITY TEXT COLORS === */
-/* Replaces Tailwind 'text-cyan-400' */
+/* === UTILS === */
 .text-accent { color: var(--accent); } 
+.content-wrapper { position: relative; z-index: 2; will-change: transform; transform-origin: center center; transition: transform 0.1s linear; }
+#webgl-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
 
-/* === CARDS (PROJECTS, INFO, EXPERIENCE) === */
+/* === CARDS === */
 .project-card, .info-card, .skill-tag, input, textarea {
     background: var(--card-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
     border-radius: 2px;
     transition: transform 0.1s ease-out, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-    transform-style: preserve-3d;
-    perspective: 1000px;
+    transform-style: preserve-3d; perspective: 1000px;
 }
 
-/* === HOVER EFFECTS (THE FIX) === */
-/* 1. Card Border & Glow */
 .project-card:hover, .info-card:hover {
-    border-color: var(--accent);
-    background: var(--card-hover);
-    box-shadow: 0 10px 30px -10px var(--accent-dim); /* Theme-matched glow */
-    transform: translateY(-4px);
+    border-color: var(--accent); background: var(--card-hover);
+    box-shadow: 0 10px 30px -10px var(--accent-dim); transform: translateY(-4px);
 }
+.project-card:hover h3, .info-card:hover h4 { color: var(--accent); text-shadow: 0 0 10px var(--accent-dim); transition: color 0.3s ease; }
+.skill-tag:hover { border-color: var(--accent); color: var(--accent); background: var(--card-hover); }
 
-/* 2. Titles inside cards turn Accent Color on hover */
-.project-card:hover h3, 
-.info-card:hover h4 {
-    color: var(--accent);
-    text-shadow: 0 0 10px var(--accent-dim);
-    transition: color 0.3s ease;
-}
-
-/* 3. Skill Tags */
-.skill-tag:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: var(--card-hover);
-}
-
-/* === BUTTONS === */
+/* === BUTTONS & INPUTS === */
 .btn-minimal {
-    border: 1px solid var(--text-primary);
-    color: var(--text-primary);
+    border: 1px solid var(--text-primary); color: var(--text-primary);
     transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-    padding: 1rem 2rem;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
+    padding: 1rem 2rem; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em;
     background: transparent;
 }
-
 .btn-minimal:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: var(--btn-text-hover);
-    box-shadow: 0 0 20px var(--accent); 
-    font-weight: 700;
+    background: var(--accent); border-color: var(--accent);
+    color: var(--btn-text-hover); box-shadow: 0 0 20px var(--accent); font-weight: 700;
 }
 
-/* === CURSOR === */
-#cursor {
-    position: fixed; top: 0; left: 0; width: 10px; height: 10px;
-    background: var(--cursor-color); border-radius: 50%;
-    pointer-events: none; z-index: 9999;
-    transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s;
-    mix-blend-mode: difference;
-}
-#cursor.hovered { width: 60px; height: 60px; opacity: 0.2; }
-
-/* INPUTS */
-input, textarea {
-    width: 100%; background: var(--card-bg); border: 1px solid var(--border-color);
-    color: var(--text-primary); outline: none;
-}
+input, textarea { width: 100%; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-primary); outline: none; }
 input:focus, textarea:focus { border-color: var(--accent); }
 
-/* NAV */
+/* === NAV & SIDEBAR === */
 .nav-item { position: relative; }
 .nav-item::after {
     content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px;
@@ -152,11 +100,6 @@ input:focus, textarea:focus { border-color: var(--accent); }
 .nav-item.active-link { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
 .nav-item.active-link::after { width: 100%; }
 
-/* UTILS */
-.content-wrapper { position: relative; z-index: 2; will-change: transform; transform-origin: center center; transition: transform 0.1s linear; }
-#webgl-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
-
-/* === SIDEBAR & FOOTER === */
 .side-nav {
     position: fixed; left: 2rem; top: 50%; transform: translateY(-50%); z-index: 50;
     display: flex; flex-direction: column; gap: 1.5rem;
@@ -170,13 +113,54 @@ input:focus, textarea:focus { border-color: var(--accent); }
 .theme-toggle:hover { opacity: 1; color: var(--accent); transform: translateX(2px); }
 .theme-toggle.active { opacity: 1; color: var(--text-primary); border-left: 1px solid var(--accent); padding-left: 1rem; }
 
-.magnetic-wrap { display: inline-block; position: relative; touch-action: none; }
+/* === EFFECTS: GRAIN, CURSOR, SCROLLBAR === */
 .film-grain {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9000; opacity: 0.03;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     animation: grainAnimation 8s steps(10) infinite;
 }
 @keyframes grainAnimation { 0%, 100% { transform: translate(0, 0); } 10% { transform: translate(-5%, -5%); } 90% { transform: translate(10%, 5%); } }
+
+#cursor {
+    position: fixed; top: 0; left: 0; width: 10px; height: 10px;
+    background: var(--cursor-color); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s;
+    mix-blend-mode: difference;
+}
+#cursor.hovered { width: 60px; height: 60px; opacity: 0.2; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-primary); }
+::selection { background: var(--accent); color: var(--card-bg); }
+
+/* === ANIMATIONS & MICRO-INTERACTIONS === */
+.magnetic-wrap { display: inline-block; position: relative; touch-action: none; }
+.click-ripple {
+    position: fixed; top: 0; left: 0; width: 20px; height: 20px;
+    border: 2px solid var(--accent); border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0); pointer-events: none; z-index: 9998;
+    animation: rippleAnim 0.6s linear forwards;
+}
+@keyframes rippleAnim {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; border-width: 2px; }
+    100% { transform: translate(-50%, -50%) scale(4); opacity: 0; border-width: 0px; }
+}
+
+.reveal-text { overflow: hidden; display: block; line-height: 1.2; }
+.reveal-text span { display: block; transform: translateY(100%); opacity: 0; transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease; }
+.reveal-text.is-visible span { transform: translateY(0); opacity: 1; }
+
+#submit-btn { position: relative; overflow: hidden; transition: all 0.4s ease; }
+#submit-btn.loading { color: transparent; pointer-events: none; }
+#submit-btn.loading::after {
+    content: ""; position: absolute; top: 0; left: 0; width: 0%; height: 100%;
+    background: var(--accent); opacity: 0.2; animation: loadProgress 2s ease forwards;
+}
+#submit-btn.success { background: var(--accent); color: var(--btn-text-hover); border-color: var(--accent); }
+@keyframes loadProgress { 0% { width: 0%; } 100% { width: 100%; } }
 
 .status-dot { display: inline-block; width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; margin-right: 8px; box-shadow: 0 0 5px #22c55e; animation: pulse 2s infinite; }
 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
@@ -195,112 +179,3 @@ input:focus, textarea:focus { border-color: var(--accent); }
     .theme-toggle.active { border-left: none; border-bottom: 1px solid var(--accent); padding-left: 0.5rem; }
 }
 
-/* ... (Keep existing CSS) ... */
-
-/* === CUSTOM SCROLLBAR (THE FINAL POLISH) === */
-::-webkit-scrollbar {
-    width: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--accent); /* Matches Cyan/Gold */
-    border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--text-primary);
-}
-
-/* Selection Color (Hacker Vibe) */
-::selection {
-    background: var(--accent);
-    color: var(--card-bg);
-}
-
-/* ... (Keep existing CSS) ... */
-
-/* === CLICK SHOCKWAVE === */
-.click-ripple {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--accent);
-    border-radius: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    pointer-events: none;
-    z-index: 9998;
-    animation: rippleAnim 0.6s linear forwards;
-}
-
-@keyframes rippleAnim {
-    0% {
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 1;
-        border-width: 2px;
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(4);
-        opacity: 0;
-        border-width: 0px;
-    }
-}
-
-/* ... (Keep existing CSS) ... */
-
-/* === 1. EDITORIAL TEXT MASK === */
-.reveal-text {
-    overflow: hidden; /* The mask */
-    display: block;
-    line-height: 1.2;
-}
-
-.reveal-text span {
-    display: block;
-    transform: translateY(100%); /* Start hidden below */
-    opacity: 0;
-    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
-}
-
-.reveal-text.is-visible span {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-/* === 2. MORPHING SUBMIT BUTTON === */
-#submit-btn {
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s ease;
-}
-
-#submit-btn.loading {
-    color: transparent;
-    pointer-events: none;
-}
-
-#submit-btn.loading::after {
-    content: "";
-    position: absolute;
-    top: 0; left: 0;
-    width: 0%; height: 100%;
-    background: var(--accent);
-    opacity: 0.2;
-    animation: loadProgress 2s ease forwards;
-}
-
-#submit-btn.success {
-    background: var(--accent);
-    color: var(--btn-text-hover);
-    border-color: var(--accent);
-}
-
-@keyframes loadProgress {
-    0% { width: 0%; }
-    100% { width: 100%; }
-}

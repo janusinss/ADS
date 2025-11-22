@@ -1,22 +1,35 @@
 // Register Plugins
 gsap.registerPlugin(ScrollTrigger);
 
-let lenis; 
+let lenis;
+// Check for Reduced Motion Preference
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Start Boot Sequence
     simulateLoading();
-    initLenis();
+
+    // 2. Init Smooth Scroll & Physics (Conditional)
+    if (!prefersReducedMotion) {
+        initLenis();
+        initMagneticButtons();
+        // We delay initTilt slightly to ensure DOM elements from APIs are painted
+        setTimeout(() => {
+             document.querySelectorAll('.project-card').forEach(initTilt);
+        }, 500);
+    }
+
     initSmoothNav();
     initCustomCursor();
-    initMagneticButtons(); 
     initAudioInteractions();
 
-    // Personality
+    // 3. Personality Features
     initTabListener();
     initClickEffects();
     initConsoleSignature();
-    initKonamiCode(); // <--- NEW EASTER EGG
+    initKonamiCode();
 
+    // 4. Load Data
     loadProfile();
     loadProjects();
     loadSkills();
@@ -24,40 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
     loadGeneric('education_api.php', 'education-list', renderSimpleCard);
     loadGeneric('certifications_api.php', 'certifications-list', renderSimpleCard);
     loadGeneric('achievements_api.php', 'achievements-list', renderSimpleCard);
+    
     setupContactForm();
 
     document.getElementById('footer-year').textContent = new Date().getFullYear();
 });
 
-// === PERSONALITY FEATURES ===
-function initTabListener() {
-    const originalTitle = document.title;
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            document.title = "⚠ CONNECTION LOST...";
-        } else {
-            document.title = originalTitle;
-        }
-    });
-}
-
-function initClickEffects() {
-    document.addEventListener('click', (e) => {
-        const ripple = document.createElement('div');
-        ripple.className = 'click-ripple';
-        ripple.style.left = `${e.clientX}px`;
-        ripple.style.top = `${e.clientY}px`;
-        document.body.appendChild(ripple);
-        setTimeout(() => ripple.remove(), 600);
-    });
-}
-
-function initConsoleSignature() {
-    const style = "background: #0f172a; color: #22d3ee; font-size: 12px; padding: 10px; border: 1px solid #22d3ee;";
-    console.log("%c CREATED BY JANUS DOMINIC | SYSTEM ONLINE ", style);
-}
-
-// === VELOCITY SKEW (Conditional) ===
+// === VELOCITY SKEW ===
 function initLenis() {
     lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
     const content = document.querySelector('.content-wrapper');
@@ -65,7 +51,7 @@ function initLenis() {
 
     lenis.on('scroll', ({ velocity }) => {
         ScrollTrigger.update();
-        const targetSkew = velocity * 0.15; 
+        const targetSkew = velocity * 0.15;
         skew += (targetSkew - skew) * 0.1;
         content.style.transform = `skewY(${skew}deg) translate3d(0,0,0)`;
     });
@@ -74,7 +60,7 @@ function initLenis() {
     gsap.ticker.lagSmoothing(0);
 }
 
-// === [PASTE THE REST OF YOUR FUNCTIONS HERE] ===
+// === MAGNETIC BUTTONS ===
 function initMagneticButtons() {
     const targets = document.querySelectorAll('.nav-item, .btn-minimal, .theme-toggle');
     targets.forEach(el => {
@@ -94,10 +80,11 @@ function initMagneticButtons() {
     });
 }
 
+// === SMOOTH NAV ===
 function initSmoothNav() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
-            e.preventDefault(); 
+            e.preventDefault();
             const targetId = this.getAttribute('href');
             const targetElem = document.querySelector(targetId);
             if (targetElem && lenis) {
@@ -107,18 +94,21 @@ function initSmoothNav() {
     });
 }
 
+// === BOOT SEQUENCE ===
 function simulateLoading() {
     const bar = document.getElementById('loader-bar');
     const logs = document.getElementById('boot-logs');
     const preloader = document.getElementById('preloader');
     const bootText = ["INITIALIZING...", "MOUNTING DOM...", "COMPILING SHADERS...", "CONNECTING...", "DECRYPTING...", "SYSTEM READY."];
     let width = 0; let logIndex = 0;
+
     const addLog = (text) => {
         const p = document.createElement('div');
-        p.innerHTML = `<span class="text-accent">>></span> ${text}`; 
+        p.innerHTML = `<span class="text-accent">>></span> ${text}`;
         logs.appendChild(p);
         if (logs.children.length > 5) logs.removeChild(logs.firstChild);
     };
+
     const interval = setInterval(() => {
         width += Math.random() * 3;
         if (width > 100) width = 100;
@@ -132,8 +122,10 @@ function simulateLoading() {
                 if (window.playIntroAnimation) window.playIntroAnimation();
                 animateItems('.fade-in');
                 scrambleText(document.querySelector('h1'));
+                
                 const h1 = document.querySelector('h1');
                 if(h1) h1.addEventListener('mouseenter', () => scrambleText(h1));
+                
                 initScrollSpy();
                 initFooterSystem();
             }, 500);
@@ -141,8 +133,10 @@ function simulateLoading() {
     }, 20);
 }
 
+// === 3D TILT ===
 function initTilt(element) {
     if (prefersReducedMotion) return;
+    
     const image = element.querySelector('img');
     element.addEventListener('mousemove', (e) => {
         const rect = element.getBoundingClientRect();
@@ -160,34 +154,29 @@ function initTilt(element) {
     });
 }
 
-// === ANIMATION HELPERS (THE MASKED REVEAL) ===
+// === MASKED REVEAL & SCRAMBLE ===
 function animateItems(selector) {
-    // Wait for DOM to be ready
     setTimeout(() => {
         const items = document.querySelectorAll(selector);
-        
         items.forEach(el => {
-            // Wrap text in a span if it's text-only (like headers)
+            // Wrap headers in mask
             if(el.tagName.match(/^H[1-6]$/)) {
                 const text = el.innerText;
                 el.innerHTML = `<div class="reveal-text"><span>${text}</span></div>`;
-                el.classList.remove('opacity-0', 'translate-y-8'); // Reset Tailwind
+                el.classList.remove('opacity-0', 'translate-y-8');
             }
         });
 
         ScrollTrigger.batch(selector, {
             onEnter: batch => {
                 batch.forEach((el, i) => {
-                    // If it has the new mask wrapper
                     const mask = el.querySelector('.reveal-text');
                     if(mask) {
                         setTimeout(() => mask.classList.add('is-visible'), i * 100);
                     } else {
-                        // Fallback for cards
                         gsap.to(el, { opacity: 1, y: 0, delay: i * 0.1, duration: 0.8, ease: "power3.out" });
                     }
 
-                    // Attach Scramble Logic
                     if (el.hasAttribute('data-scramble') || el.querySelector('[data-scramble]')) {
                         const target = el.hasAttribute('data-scramble') ? el : el.querySelector('[data-scramble]');
                         scrambleText(target);
@@ -199,7 +188,7 @@ function animateItems(selector) {
                 });
             },
             start: "top 90%",
-            once: true
+            once: true 
         });
     }, 100);
 }
@@ -209,6 +198,7 @@ function scrambleText(element) {
     element.dataset.scrambling = "true";
     const finalText = element.dataset.originalText || element.innerText;
     if(!element.dataset.originalText) element.dataset.originalText = finalText;
+    
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@#$%^&*';
     let iterations = 0;
     const interval = setInterval(() => {
@@ -221,6 +211,7 @@ function scrambleText(element) {
     }, 30);
 }
 
+// === CUSTOM CURSOR ===
 function initCustomCursor() {
     if (prefersReducedMotion) return;
     const cursor = document.getElementById('cursor');
@@ -274,7 +265,11 @@ async function loadProjects() {
             </div>
         `).join('');
         animateItems('.project-card');
-        setTimeout(() => document.querySelectorAll('.project-card').forEach(initTilt), 100);
+        
+        // Add tilt to new elements if motion allowed
+        if(!prefersReducedMotion) {
+            setTimeout(() => document.querySelectorAll('.project-card').forEach(initTilt), 100);
+        }
     } catch(e) {}
 }
 
@@ -300,6 +295,7 @@ async function loadGeneric(endpoint, id, renderFn) {
     } catch(e) {}
 }
 
+// === RENDER HELPERS ===
 const renderExperience = exp => `
     <div class="info-card p-6 opacity-0 translate-y-8 border-l-2 border-transparent transition-all">
         <div class="flex justify-between items-baseline mb-2">
@@ -318,66 +314,33 @@ const renderSimpleCard = item => `
     </div>
 `;
 
-// === EASTER EGG: KONAMI CODE ===
-function initKonamiCode() {
-    const code = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-    let current = 0;
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === code[current]) {
-            current++;
-            if (current === code.length) {
-                activateGodMode();
-                current = 0;
-            }
-        } else {
-            current = 0;
-        }
-    });
-}
-
-function activateGodMode() {
-    alert("GOD MODE ACTIVATED");
-    document.documentElement.style.setProperty('--accent', '#ff00ff'); // Magenta Mode
-    document.body.style.filter = "invert(1) hue-rotate(180deg)";
-    AudioEngine.playGlitch();
-}
-
-// === FORM ANIMATION ===
+// === FORM & SYSTEM ===
 function setupContactForm() {
     const form = document.getElementById('contact-form');
     const btn = form.querySelector('button');
-    btn.id = 'submit-btn'; // Ensure ID for CSS
+    btn.id = 'submit-btn'; 
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const originalText = btn.innerText;
         
-        // 1. Loading State
         btn.classList.add('loading');
         btn.innerText = "TRANSMITTING...";
-        AudioEngine.playClick(); // Sound effect
+        AudioEngine.playClick();
 
         const formData = new FormData(form);
-        
         try {
-            // Simulate network delay for the effect (Remove setTimeout in production if real API is fast)
-            await new Promise(r => setTimeout(r, 1500)); 
-            
+            await new Promise(r => setTimeout(r, 1500)); // Fake delay
             const res = await fetch(`${API_BASE}/contacts_api.php`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(Object.fromEntries(formData))
             });
-
             if (res.ok) {
-                // 2. Success State
                 btn.classList.remove('loading');
                 btn.classList.add('success');
                 btn.innerText = "TRANSMISSION RECEIVED";
                 form.reset();
-                
-                // Reset button after 3s
                 setTimeout(() => {
                     btn.classList.remove('success');
                     btn.innerText = originalText;
@@ -422,6 +385,55 @@ function initFooterSystem() {
             uptimeContainer.innerText = `${hrs}:${mins}:${secs}`;
         }, 1000);
     }
+}
+
+// === PERSONALITY EXTRAS ===
+function initTabListener() {
+    const originalTitle = document.title;
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) document.title = "⚠ CONNECTION LOST...";
+        else document.title = originalTitle;
+    });
+}
+
+function initClickEffects() {
+    if (prefersReducedMotion) return;
+    document.addEventListener('click', (e) => {
+        const ripple = document.createElement('div');
+        ripple.className = 'click-ripple';
+        ripple.style.left = `${e.clientX}px`;
+        ripple.style.top = `${e.clientY}px`;
+        document.body.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+    });
+}
+
+function initConsoleSignature() {
+    const style = "background: #0f172a; color: #22d3ee; font-size: 12px; padding: 10px; border: 1px solid #22d3ee;";
+    console.log("%c CREATED BY JANUS DOMINIC | SYSTEM ONLINE ", style);
+}
+
+function initKonamiCode() {
+    const code = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let current = 0;
+    document.addEventListener('keydown', (e) => {
+        if (e.key === code[current]) {
+            current++;
+            if (current === code.length) {
+                activateGodMode();
+                current = 0;
+            }
+        } else {
+            current = 0;
+        }
+    });
+}
+
+function activateGodMode() {
+    alert("GOD MODE ACTIVATED");
+    document.documentElement.style.setProperty('--accent', '#ff00ff'); 
+    document.body.style.filter = "invert(1) hue-rotate(180deg)";
+    AudioEngine.playGlitch();
 }
 
 // === AUDIO ENGINE ===
