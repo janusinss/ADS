@@ -194,3 +194,113 @@ input:focus, textarea:focus { border-color: var(--accent); }
     .theme-toggle { writing-mode: horizontal-tb; border-left: none; padding: 0.5rem; font-size: 0.6rem; }
     .theme-toggle.active { border-left: none; border-bottom: 1px solid var(--accent); padding-left: 0.5rem; }
 }
+
+/* ... (Keep existing CSS) ... */
+
+/* === CUSTOM SCROLLBAR (THE FINAL POLISH) === */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent); /* Matches Cyan/Gold */
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-primary);
+}
+
+/* Selection Color (Hacker Vibe) */
+::selection {
+    background: var(--accent);
+    color: var(--card-bg);
+}
+
+/* ... (Keep existing CSS) ... */
+
+/* === CLICK SHOCKWAVE === */
+.click-ripple {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    pointer-events: none;
+    z-index: 9998;
+    animation: rippleAnim 0.6s linear forwards;
+}
+
+@keyframes rippleAnim {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+        border-width: 2px;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(4);
+        opacity: 0;
+        border-width: 0px;
+    }
+}
+
+/* ... (Keep existing CSS) ... */
+
+/* === 1. EDITORIAL TEXT MASK === */
+.reveal-text {
+    overflow: hidden; /* The mask */
+    display: block;
+    line-height: 1.2;
+}
+
+.reveal-text span {
+    display: block;
+    transform: translateY(100%); /* Start hidden below */
+    opacity: 0;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+}
+
+.reveal-text.is-visible span {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* === 2. MORPHING SUBMIT BUTTON === */
+#submit-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+
+#submit-btn.loading {
+    color: transparent;
+    pointer-events: none;
+}
+
+#submit-btn.loading::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 0%; height: 100%;
+    background: var(--accent);
+    opacity: 0.2;
+    animation: loadProgress 2s ease forwards;
+}
+
+#submit-btn.success {
+    background: var(--accent);
+    color: var(--btn-text-hover);
+    border-color: var(--accent);
+}
+
+@keyframes loadProgress {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}

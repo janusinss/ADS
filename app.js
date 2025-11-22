@@ -1,7 +1,7 @@
 // Register Plugins
 gsap.registerPlugin(ScrollTrigger);
 
-let lenis; // Global scroll instance
+let lenis; 
 
 document.addEventListener('DOMContentLoaded', () => {
     simulateLoading();
@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     initCustomCursor();
     initMagneticButtons(); 
     initAudioInteractions();
+
+    // Personality
+    initTabListener();
+    initClickEffects();
+    initConsoleSignature();
+    initKonamiCode(); // <--- NEW EASTER EGG
 
     loadProfile();
     loadProjects();
@@ -23,22 +29,52 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('footer-year').textContent = new Date().getFullYear();
 });
 
-// === VELOCITY SKEW ===
+// === PERSONALITY FEATURES ===
+function initTabListener() {
+    const originalTitle = document.title;
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            document.title = "⚠ CONNECTION LOST...";
+        } else {
+            document.title = originalTitle;
+        }
+    });
+}
+
+function initClickEffects() {
+    document.addEventListener('click', (e) => {
+        const ripple = document.createElement('div');
+        ripple.className = 'click-ripple';
+        ripple.style.left = `${e.clientX}px`;
+        ripple.style.top = `${e.clientY}px`;
+        document.body.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+    });
+}
+
+function initConsoleSignature() {
+    const style = "background: #0f172a; color: #22d3ee; font-size: 12px; padding: 10px; border: 1px solid #22d3ee;";
+    console.log("%c CREATED BY JANUS DOMINIC | SYSTEM ONLINE ", style);
+}
+
+// === VELOCITY SKEW (Conditional) ===
 function initLenis() {
     lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
     const content = document.querySelector('.content-wrapper');
     let skew = 0;
+
     lenis.on('scroll', ({ velocity }) => {
         ScrollTrigger.update();
         const targetSkew = velocity * 0.15; 
         skew += (targetSkew - skew) * 0.1;
         content.style.transform = `skewY(${skew}deg) translate3d(0,0,0)`;
     });
+
     gsap.ticker.add((time) => lenis.raf(time * 1000));
     gsap.ticker.lagSmoothing(0);
 }
 
-// === MAGNETIC BUTTONS ===
+// === [PASTE THE REST OF YOUR FUNCTIONS HERE] ===
 function initMagneticButtons() {
     const targets = document.querySelectorAll('.nav-item, .btn-minimal, .theme-toggle');
     targets.forEach(el => {
@@ -71,21 +107,18 @@ function initSmoothNav() {
     });
 }
 
-// === BOOT SEQUENCE ===
 function simulateLoading() {
     const bar = document.getElementById('loader-bar');
     const logs = document.getElementById('boot-logs');
     const preloader = document.getElementById('preloader');
     const bootText = ["INITIALIZING...", "MOUNTING DOM...", "COMPILING SHADERS...", "CONNECTING...", "DECRYPTING...", "SYSTEM READY."];
     let width = 0; let logIndex = 0;
-
     const addLog = (text) => {
         const p = document.createElement('div');
-        p.innerHTML = `<span class="text-accent">>></span> ${text}`; // Changed to text-accent
+        p.innerHTML = `<span class="text-accent">>></span> ${text}`; 
         logs.appendChild(p);
         if (logs.children.length > 5) logs.removeChild(logs.firstChild);
     };
-
     const interval = setInterval(() => {
         width += Math.random() * 3;
         if (width > 100) width = 100;
@@ -101,7 +134,6 @@ function simulateLoading() {
                 scrambleText(document.querySelector('h1'));
                 const h1 = document.querySelector('h1');
                 if(h1) h1.addEventListener('mouseenter', () => scrambleText(h1));
-                
                 initScrollSpy();
                 initFooterSystem();
             }, 500);
@@ -110,6 +142,7 @@ function simulateLoading() {
 }
 
 function initTilt(element) {
+    if (prefersReducedMotion) return;
     const image = element.querySelector('img');
     element.addEventListener('mousemove', (e) => {
         const rect = element.getBoundingClientRect();
@@ -127,23 +160,48 @@ function initTilt(element) {
     });
 }
 
+// === ANIMATION HELPERS (THE MASKED REVEAL) ===
 function animateItems(selector) {
-    ScrollTrigger.batch(selector, {
-        onEnter: batch => {
-            gsap.to(batch, { opacity: 1, y: 0, stagger: 0.1, duration: 0.8, ease: "power3.out" });
-            batch.forEach(el => { 
-                if (el.hasAttribute('data-scramble')) {
-                    scrambleText(el);
-                    el.addEventListener('mouseenter', () => {
-                        scrambleText(el);
-                        if(typeof AudioEngine !== 'undefined') AudioEngine.playGlitch();
-                    });
-                }
-            });
-        },
-        start: "top 90%",
-        once: true 
-    });
+    // Wait for DOM to be ready
+    setTimeout(() => {
+        const items = document.querySelectorAll(selector);
+        
+        items.forEach(el => {
+            // Wrap text in a span if it's text-only (like headers)
+            if(el.tagName.match(/^H[1-6]$/)) {
+                const text = el.innerText;
+                el.innerHTML = `<div class="reveal-text"><span>${text}</span></div>`;
+                el.classList.remove('opacity-0', 'translate-y-8'); // Reset Tailwind
+            }
+        });
+
+        ScrollTrigger.batch(selector, {
+            onEnter: batch => {
+                batch.forEach((el, i) => {
+                    // If it has the new mask wrapper
+                    const mask = el.querySelector('.reveal-text');
+                    if(mask) {
+                        setTimeout(() => mask.classList.add('is-visible'), i * 100);
+                    } else {
+                        // Fallback for cards
+                        gsap.to(el, { opacity: 1, y: 0, delay: i * 0.1, duration: 0.8, ease: "power3.out" });
+                    }
+
+                    // Attach Scramble Logic
+                    if (el.hasAttribute('data-scramble') || el.querySelector('[data-scramble]')) {
+                        const target = el.hasAttribute('data-scramble') ? el : el.querySelector('[data-scramble]');
+                        scrambleText(target);
+                        target.addEventListener('mouseenter', () => {
+                            scrambleText(target);
+                            if(typeof AudioEngine !== 'undefined') AudioEngine.playGlitch();
+                        });
+                    }
+                });
+            },
+            start: "top 90%",
+            once: true
+        });
+    }, 100);
 }
 
 function scrambleText(element) {
@@ -164,6 +222,7 @@ function scrambleText(element) {
 }
 
 function initCustomCursor() {
+    if (prefersReducedMotion) return;
     const cursor = document.getElementById('cursor');
     const mouse = { x: -100, y: -100 };
     const pos = { x: -100, y: -100 };
@@ -180,7 +239,7 @@ function initCustomCursor() {
     });
 }
 
-// === API LOADERS (CLEANED) ===
+// === API LOADERS ===
 const API_BASE = './api';
 
 async function loadProfile() {
@@ -201,7 +260,6 @@ async function loadProjects() {
     try {
         const res = await fetch(`${API_BASE}/projects_api.php`);
         const data = await res.json();
-        // Removed hardcoded Tailwind colors. Now uses CSS variables.
         document.getElementById('projects-grid').innerHTML = data.map(p => `
             <div class="project-card p-8 opacity-0 translate-y-8 group">
                 <div class="mb-6 border-b border-gray-500/20 pb-6">
@@ -260,24 +318,76 @@ const renderSimpleCard = item => `
     </div>
 `;
 
+// === EASTER EGG: KONAMI CODE ===
+function initKonamiCode() {
+    const code = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let current = 0;
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === code[current]) {
+            current++;
+            if (current === code.length) {
+                activateGodMode();
+                current = 0;
+            }
+        } else {
+            current = 0;
+        }
+    });
+}
+
+function activateGodMode() {
+    alert("GOD MODE ACTIVATED");
+    document.documentElement.style.setProperty('--accent', '#ff00ff'); // Magenta Mode
+    document.body.style.filter = "invert(1) hue-rotate(180deg)";
+    AudioEngine.playGlitch();
+}
+
+// === FORM ANIMATION ===
 function setupContactForm() {
     const form = document.getElementById('contact-form');
-    const msg = document.getElementById('form-message');
+    const btn = form.querySelector('button');
+    btn.id = 'submit-btn'; // Ensure ID for CSS
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const originalText = btn.innerText;
+        
+        // 1. Loading State
+        btn.classList.add('loading');
+        btn.innerText = "TRANSMITTING...";
+        AudioEngine.playClick(); // Sound effect
+
         const formData = new FormData(form);
+        
         try {
+            // Simulate network delay for the effect (Remove setTimeout in production if real API is fast)
+            await new Promise(r => setTimeout(r, 1500)); 
+            
             const res = await fetch(`${API_BASE}/contacts_api.php`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(Object.fromEntries(formData))
             });
+
             if (res.ok) {
-                msg.textContent = 'TRANSMISSION SUCCESSFUL';
-                msg.className = 'p-4 text-xs font-mono bg-accent/10 text-accent border border-accent block';
+                // 2. Success State
+                btn.classList.remove('loading');
+                btn.classList.add('success');
+                btn.innerText = "TRANSMISSION RECEIVED";
                 form.reset();
+                
+                // Reset button after 3s
+                setTimeout(() => {
+                    btn.classList.remove('success');
+                    btn.innerText = originalText;
+                }, 3000);
             }
-        } catch (e) {}
+        } catch (e) {
+            btn.classList.remove('loading');
+            btn.innerText = "ERROR - RETRY";
+            btn.style.borderColor = "red";
+        }
     });
 }
 
@@ -314,6 +424,7 @@ function initFooterSystem() {
     }
 }
 
+// === AUDIO ENGINE ===
 const AudioEngine = {
     ctx: null, masterGain: null, isMuted: false,
     init() {
@@ -351,6 +462,15 @@ const AudioEngine = {
         noise.connect(gain); gain.connect(this.masterGain);
         gain.gain.setValueAtTime(0.2, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
         noise.start();
+    },
+    playKeystroke() {
+        if (!this.ctx || this.isMuted) return;
+        const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+        osc.connect(gain); gain.connect(this.masterGain); osc.type = 'square'; 
+        const now = this.ctx.currentTime;
+        osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(200, now + 0.03);
+        gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+        osc.start(now); osc.stop(now + 0.03);
     }
 };
 
@@ -361,6 +481,7 @@ function initAudioInteractions() {
         document.removeEventListener('click', startAudio); document.removeEventListener('mousemove', startAudio);
     };
     document.addEventListener('click', startAudio); document.addEventListener('mousemove', startAudio);
+    
     document.body.addEventListener('mouseenter', (e) => {
         if (e.target.closest('a, button, .project-card, .magnetic-wrap')) AudioEngine.playHover();
     }, true);
@@ -368,4 +489,10 @@ function initAudioInteractions() {
         if (e.target.closest('a, button, .theme-toggle')) AudioEngine.playClick();
     });
     document.querySelectorAll('.theme-toggle').forEach(btn => btn.addEventListener('click', () => AudioEngine.playGlitch()));
+
+    const inputs = document.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('keydown', () => AudioEngine.playKeystroke());
+        input.addEventListener('focus', () => AudioEngine.playHover());
+    });
 }

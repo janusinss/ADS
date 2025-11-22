@@ -3,14 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Janus Dominic - Creative Developer</title>
+    <meta name="description" content="Janus Dominic - Creative Full-Stack Developer. Interactive 3D portfolio built with WebGL, Three.js, and GSAP.">
+    <meta name="keywords" content="Janus Dominic, Web Developer, Creative Developer, Three.js, WebGL, Portfolio, PHP, React">
+    <meta name="author" content="Janus Dominic">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-portfolio-url.com/">
+    <meta property="og:title" content="Janus Dominic | Creative Developer">
+    <meta property="og:description" content="Interactive 3D portfolio featuring WebGL physics, fluid simulations, and cinematic UI.">
+    <meta property="og:image" content="https://your-portfolio-url.com/og-image.jpg"> <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://your-portfolio-url.com/">
+    <meta property="twitter:title" content="Janus Dominic | Creative Developer">
+    <meta property="twitter:description" content="Interactive 3D portfolio featuring WebGL physics, fluid simulations, and cinematic UI.">
+    <meta property="twitter:image" content="https://your-portfolio-url.com/og-image.jpg">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+    <title>JDominic | Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -91,27 +103,14 @@
 
                 <section id="info" class="mb-32">
                     <h2 class="section-title" data-scramble>Background</h2>
-                    
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
                         <div class="space-y-12">
-                            <div>
-                                <h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">Experience</h3>
-                                <div id="experience-list" class="space-y-6"></div>
-                            </div>
-                            <div>
-                                <h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">Education</h3>
-                                <div id="education-list" class="space-y-6"></div>
-                            </div>
+                            <div><h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">Experience</h3><div id="experience-list" class="space-y-6"></div></div>
+                            <div><h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">Education</h3><div id="education-list" class="space-y-6"></div></div>
                         </div>
                         <div class="space-y-12">
-                            <div>
-                                <h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">Certifications</h3>
-                                <div id="certifications-list" class="space-y-6"></div>
-                            </div>
-                            <div>
-                                <h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">Achievements</h3>
-                                <div id="achievements-list" class="space-y-6"></div>
-                            </div>
+                            <div><h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">Certifications</h3><div id="certifications-list" class="space-y-6"></div></div>
+                            <div><h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">Achievements</h3><div id="achievements-list" class="space-y-6"></div></div>
                         </div>
                     </div>
                 </section>
@@ -140,20 +139,11 @@
 
         <footer class="px-6 py-8 border-t border-gray-800/50 mt-12">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-xs font-mono text-secondary/60 gap-4">
-                <div class="flex items-center gap-2">
-                    <span>&copy; <span id="footer-year">2024</span> JANUS DOMINIC</span>
-                </div>
+                <div class="flex items-center gap-2"><span>&copy; <span id="footer-year">2024</span> JANUS DOMINIC</span></div>
                 <div class="flex items-center gap-6">
-                    <div class="flex items-center">
-                        <span class="status-dot"></span>
-                        <span>SYSTEM ONLINE</span>
-                    </div>
-                    <div class="hidden md:block">
-                        UPTIME: <span id="system-uptime" class="text-accent">00:00:00</span>
-                    </div>
-                    <div>
-                        LOC: <span class="text-accent">PHILIPPINES</span>
-                    </div>
+                    <div class="flex items-center"><span class="status-dot"></span><span>SYSTEM ONLINE</span></div>
+                    <div class="hidden md:block">UPTIME: <span id="system-uptime" class="text-accent">00:00:00</span></div>
+                    <div>LOC: <span class="text-accent">PHILIPPINES</span></div>
                 </div>
             </div>
         </footer>
@@ -176,24 +166,33 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
-        // === LOCKED BACKGROUND SHADER (LIQUID) ===
+        // === BACKGROUND SHADER (VELOCITY RGB SHIFT) ===
         const material = new THREE.ShaderMaterial({
             uniforms: {
                 u_time: { value: 0 },
                 u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
                 u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
                 u_dark: { value: isDark ? 1.0 : 0.0 },
-                u_scroll: { value: 0.0 }
+                u_scroll: { value: 0.0 },
+                u_rgbShift: { value: 0.0 } // Velocity variable
             },
-            vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
             fragmentShader: `
                 uniform float u_time;
                 uniform vec2 u_mouse;
                 uniform vec2 u_resolution;
                 uniform float u_dark;
                 uniform float u_scroll;
+                uniform float u_rgbShift; // <--- THE NEW VELOCITY VARIABLE
                 varying vec2 vUv;
 
+                // === NOISE FUNCTIONS ===
                 float random(vec2 st) { return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123); }
                 float grain(vec2 uv) { return random(uv + mod(u_time, 10.0)) * 0.08; }
                 float noise(vec2 st) {
@@ -210,6 +209,28 @@
                 }
                 vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d) { return a + b * cos(6.28318 * (c * t + d)); }
 
+                // === CORE LIQUID LOGIC (Refactored for RGB Split) ===
+                float getPattern(vec2 st, float time) {
+                    vec2 q = vec2(0.); 
+                    q.x = fbm(st + 0.00 * time); 
+                    q.y = fbm(st + vec2(1.0));
+                    
+                    vec2 r = vec2(0.); 
+                    r.x = fbm(st + 1.0 * q + vec2(1.7, 9.2) + 0.15 * time);
+                    r.y = fbm(st + 1.0 * q + vec2(8.3, 2.8) + 0.126 * time);
+                    
+                    return fbm(st + r);
+                }
+
+                vec3 getThemeColor(float f, float dark) {
+                    // Warm Mode (Gold/Bronze)
+                    vec3 goldBg = mix(vec3(0.1, 0.08, 0.06), vec3(0.2, 0.18, 0.15), clamp(f*f*4.0, 0.0, 1.0)); 
+                    // Dark Mode (Deep Navy/Cyan)
+                    vec3 cyanBg = mix(vec3(0.098, 0.094, 0.231), vec3(0.439, 0.537, 0.576), clamp(f*f*4.0, 0.0, 1.0));
+                    
+                    return mix(goldBg, cyanBg, dark);
+                }
+
                 void main() {
                     vec2 st = vUv;
                     float aspect = u_resolution.x / u_resolution.y;
@@ -219,17 +240,30 @@
                     vec2 mouse = u_mouse;
                     mouse.x *= aspect;
 
-                    vec2 q = vec2(0.); q.x = fbm(st + 0.00 * u_time); q.y = fbm(st + vec2(1.0));
-                    vec2 r = vec2(0.); r.x = fbm(st + 1.0 * q + vec2(1.7, 9.2) + 0.15 * u_time);
-                    r.y = fbm(st + 1.0 * q + vec2(8.3, 2.8) + 0.126 * u_time);
-                    float f = fbm(st + r);
+                    // === 1. CHROMATIC ABERRATION (The Glitch) ===
+                    // We calculate the pattern 3 separate times with offsets based on scroll speed
+                    float shift = u_rgbShift * 0.03; // Multiplier for intensity
 
-                    vec3 goldBg = mix(vec3(0.1, 0.08, 0.06), vec3(0.2, 0.18, 0.15), clamp(f*f*4.0, 0.0, 1.0)); 
-                    vec3 cyanBg = mix(vec3(0.098, 0.094, 0.231), vec3(0.439, 0.537, 0.576), clamp(f*f*4.0, 0.0, 1.0));
-                    vec3 color = mix(goldBg, cyanBg, u_dark);
+                    // Red Channel (Shifted Left)
+                    float fR = getPattern(st + vec2(shift, 0.0), u_time);
+                    vec3 cR = getThemeColor(fR, u_dark);
 
-                    vec2 diff = st - mouse; diff.y *= 1.85;
-                    float d = length(diff); float influence = smoothstep(0.8, 0.0, d);
+                    // Green Channel (Center - Anchor)
+                    float fG = getPattern(st, u_time);
+                    vec3 cG = getThemeColor(fG, u_dark);
+
+                    // Blue Channel (Shifted Right)
+                    float fB = getPattern(st - vec2(shift, 0.0), u_time);
+                    vec3 cB = getThemeColor(fB, u_dark);
+
+                    // Combine into final image
+                    vec3 color = vec3(cR.r, cG.g, cB.b);
+
+                    // === 2. RIPPLE EFFECT ===
+                    vec2 diff = st - mouse; 
+                    diff.y *= 1.85;
+                    float d = length(diff); 
+                    float influence = smoothstep(0.8, 0.0, d);
                     
                     vec3 a, b, c, dParam; 
                     float glowAmount;
@@ -243,13 +277,17 @@
 
                     vec3 rippleColor = palette(d * 3.0 - u_time * 0.5, a, b, c, dParam);
                     rippleColor = mix(rippleColor, vec3(1.0), glowAmount);
+                    
                     color += rippleColor * (sin(d * 12.0 - u_time * 2.5) * 0.5 + 0.5) * influence * 0.04;
+                    
+                    // === 3. FILM GRAIN ===
                     color += vec3(grain(vUv) * 0.6);
 
                     gl_FragColor = vec4(color, 1.0);
                 }
-            `,
+            `
         });
+
         const geometry = new THREE.PlaneGeometry(20, 20, 1, 1);
         mesh = new THREE.Mesh(geometry, material);
         scene.add(mesh);
@@ -263,10 +301,24 @@
         updateHeroTheme(isDark);
         setupScrollAnimation();
 
+        // SCROLL VELOCITY TRACKER
+        let lastScrollY = 0;
+        let targetVel = 0;
+        let currentVel = 0;
+
         function animate() {
             requestAnimationFrame(animate);
             mouseX += (targetX - mouseX) * 0.05; mouseY += (targetY - mouseY) * 0.05;
-            material.uniforms.u_time.value += 0.01; material.uniforms.u_mouse.value.set(mouseX, mouseY);
+            
+            // UPDATE SHADER UNIFORMS
+            material.uniforms.u_time.value += 0.01; 
+            material.uniforms.u_mouse.value.set(mouseX, mouseY);
+            
+            // VELOCITY DECAY FOR RGB SHIFT
+            currentVel += (targetVel - currentVel) * 0.1;
+            material.uniforms.u_rgbShift.value = currentVel;
+            targetVel *= 0.9; // Decay back to 0
+
             if (heroGroup) {
                 const t = material.uniforms.u_time.value;
                 heroGroup.children[0].rotation.y = t * 0.05; heroGroup.children[0].rotation.z = Math.sin(t * 0.5) * 0.05;
@@ -280,11 +332,22 @@
         animate();
 
         document.addEventListener('mousemove', e => { targetX = e.clientX / window.innerWidth; targetY = 1.0 - (e.clientY / window.innerHeight); });
+        
+        // SCROLL LISTENER
         window.addEventListener('scroll', () => { 
-            material.uniforms.u_scroll.value = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const scrollPct = window.scrollY / maxScroll;
+            material.uniforms.u_scroll.value = scrollPct;
+            
             const progressBar = document.getElementById('scroll-progress');
-            if (progressBar) progressBar.style.width = `${(window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100}%`;
+            if (progressBar) progressBar.style.width = `${scrollPct * 100}%`;
+
+            // CALCULATE VELOCITY
+            const v = Math.abs(window.scrollY - lastScrollY);
+            targetVel = Math.min(v * 0.05, 0.5); // Cap at 0.5 intensity
+            lastScrollY = window.scrollY;
         });
+
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight); material.uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
