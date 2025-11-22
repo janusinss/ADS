@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     setupContactForm();
 
-    document.getElementById('footer-year').textContent = new Date().getFullYear();
 });
 
 // === VELOCITY SKEW ===
@@ -553,3 +552,15 @@ function initAudioInteractions() {
         input.addEventListener('focus', () => AudioEngine.playHover());
     });
 }
+
+// === GLOBAL MUTE TOGGLE ===
+window.toggleMute = function() {
+    if (typeof AudioEngine !== 'undefined') {
+        AudioEngine.isMuted = !AudioEngine.isMuted;
+        // Optional: Save to localStorage
+        // localStorage.setItem('isMuted', AudioEngine.isMuted); 
+        
+        const btn = document.getElementById('mute-btn');
+        if(btn) btn.classList.toggle('muted');
+    }
+};

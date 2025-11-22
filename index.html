@@ -54,14 +54,6 @@
     </div>
     
     <button id="mute-btn" onclick="toggleMute()">SND</button>
-    <script>
-        function toggleMute() {
-            if (typeof AudioEngine !== 'undefined') {
-                AudioEngine.isMuted = !AudioEngine.isMuted;
-                document.getElementById('mute-btn').classList.toggle('muted');
-            }
-        }
-    </script>
 
     <div class="content-wrapper">
         <header class="px-6 lg:px-16 py-8 lg:py-12 min-h-screen flex flex-col justify-center relative z-10">
