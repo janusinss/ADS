@@ -295,8 +295,18 @@ async function loadProjects() {
     try {
         const res = await fetch(`${API_BASE}/projects_api.php`);
         const data = await res.json();
-        document.getElementById('projects-grid').innerHTML = data.map(p => `
-            <div class="project-card p-8 opacity-0 translate-y-8 group">
+        const container = document.getElementById('projects-grid');
+        
+        // 1. RENDER PROJECTS
+        let html = data.map(p => `
+            <div class="project-card p-8 opacity-0 translate-y-8 group relative">
+                
+                ${isManagerMode ? `
+                    <button onclick="deleteProject(${p.id})" class="absolute top-4 right-4 text-red-500 hover:text-red-400 text-xs font-mono border border-red-500 px-2 py-1 z-50">
+                        [DELETE]
+                    </button>
+                ` : ''}
+
                 <div class="mb-6 border-b border-gray-500/20 pb-6">
                      <h3 class="text-3xl font-bold mb-2 transition-colors" data-scramble>${p.title}</h3>
                      <span class="text-xs font-mono border border-gray-500 px-2 py-1 rounded">${p.status || 'DEPLOYED'}</span>
@@ -308,9 +318,20 @@ async function loadProjects() {
                 </div>
             </div>
         `).join('');
+
+        // 2. ADD "NEW PROJECT" CARD (Visible only in Manager Mode)
+        if (isManagerMode) {
+            html += `
+                <div onclick="openAddModal()" class="project-card p-8 flex flex-col items-center justify-center cursor-pointer border-dashed border-2 border-gray-700 hover:border-accent transition-colors group opacity-0 translate-y-8">
+                    <span class="text-4xl mb-2 text-gray-600 group-hover:text-accent">+</span>
+                    <span class="text-xs font-mono text-gray-500 group-hover:text-accent">INITIALIZE NEW PROJECT</span>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
         animateItems('.project-card');
         
-        // Add tilt to new elements if motion allowed
         if(!prefersReducedMotion) {
             setTimeout(() => document.querySelectorAll('.project-card').forEach(initTilt), 100);
         }
@@ -564,3 +585,69 @@ window.toggleMute = function() {
         if(btn) btn.classList.toggle('muted');
     }
 };
+
+// === MANAGER MODE (MEETS CRUD REQUIREMENT) ===
+let isManagerMode = false;
+
+function toggleManagerMode() {
+    isManagerMode = !isManagerMode;
+    const btn = document.getElementById('manager-toggle');
+    btn.innerText = isManagerMode ? "[ EXIT ]" : "[ MANAGE ]";
+    btn.style.color = isManagerMode ? "red" : "var(--accent)";
+    
+    // Refresh the lists to show/hide delete buttons
+    loadProjects(); 
+    // (You can add loadSkills(), loadExperience() here too if you want full CRUD everywhere)
+}
+
+// === MODAL CONTROLS ===
+function openAddModal() {
+    document.getElementById('add-modal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('add-modal').classList.add('hidden');
+}
+
+// === CRUD: ADD PROJECT ===
+document.getElementById('add-project-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    // Add specific fields needed for API
+    const data = Object.fromEntries(formData.entries());
+    
+    try {
+        const res = await fetch(`${API_BASE}/projects_api.php`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        
+        if(res.ok) {
+            closeModal();
+            e.target.reset();
+            loadProjects(); // Refresh list
+            alert("PROJECT INITIALIZED");
+        }
+    } catch(err) {
+        console.error(err);
+        alert("ERROR");
+    }
+});
+
+// === CRUD: DELETE PROJECT ===
+async function deleteProject(id) {
+    if(!confirm("CONFIRM DELETION?")) return;
+    
+    try {
+        const res = await fetch(`${API_BASE}/projects_api.php`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ action: 'delete', id: id })
+        });
+        
+        if(res.ok) {
+            loadProjects(); // Refresh list
+        }
+    } catch(err) { console.error(err); }
+}

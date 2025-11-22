@@ -143,6 +143,47 @@
         </footer>
     </div>
 
+<button id="manager-toggle" class="fixed bottom-4 left-8 z-50 text-xs font-mono text-accent opacity-50 hover:opacity-100 transition-opacity" onclick="toggleManagerMode()">[ MANAGE ]</button>
+
+<div id="add-modal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-[#0f172a] border border-accent p-8 max-w-md w-full relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+        <button onclick="closeModal()" class="absolute top-4 right-4 text-secondary hover:text-accent">✕</button>
+        <h3 class="text-xl font-bold mb-6 text-accent font-mono">>> ADD_NODE</h3>
+        
+        <form id="add-project-form" class="space-y-4">
+            <input type="hidden" name="action" value="add"> <div>
+                <label class="block text-xs font-mono text-secondary mb-1">TITLE</label>
+                <input type="text" name="title" required class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none">
+            </div>
+            
+            <div>
+                <label class="block text-xs font-mono text-secondary mb-1">DESCRIPTION</label>
+                <textarea name="description" required class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none" rows="3"></textarea>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-mono text-secondary mb-1">PROJECT URL</label>
+                    <input type="text" name="project_url" class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-secondary mb-1">REPO URL</label>
+                    <input type="text" name="repo_url" class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none">
+                </div>
+            </div>
+
+             <div>
+                <label class="block text-xs font-mono text-secondary mb-1">IMAGE URL</label>
+                <input type="text" name="image_url" placeholder="https://..." class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none">
+            </div>
+            
+            <input type="hidden" name="project_date" value="2024-01-01">
+
+            <button type="submit" class="w-full py-3 mt-4 btn-minimal text-xs hover:bg-accent hover:text-black">INITIALIZE PROJECT</button>
+        </form>
+    </div>
+</div>
+
 <script>
     let scene, camera, renderer, mesh, heroGroup;
     let heroMaterials = { planet: null, ringInner: null, ringMiddle: null, ringOuter: null, particles: null };
