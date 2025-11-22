@@ -179,3 +179,127 @@ input:focus, textarea:focus { border-color: var(--accent); }
     .theme-toggle.active { border-left: none; border-bottom: 1px solid var(--accent); padding-left: 0.5rem; }
 }
 
+/* === DYNAMIC PROGRESS BARS (MOVED TO BOTTOM FOR SAFETY) === */
+#scroll-progress, 
+#loader-bar {
+    background-color: var(--accent) !important; 
+    box-shadow: 0 0 15px var(--accent) !important; 
+    transition: background-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+#preloader ::selection {
+    background: var(--accent);
+    color: black;
+}
+
+/* ... (Keep existing CSS) ... */
+
+/* === LOADING STATE (Hide Custom Cursor) === */
+body.loading {
+    cursor: default; /* Use system cursor during load */
+    overflow: hidden; /* Prevent scrolling */
+}
+
+body.loading #cursor {
+    opacity: 0 !important; /* Hide the blue dot */
+}
+
+/* Blink Animation for the Start Prompt */
+.blink {
+    animation: blinker 1s linear infinite;
+}
+@keyframes blinker {
+    50% { opacity: 0; }
+}
+
+/* ... (Keep existing CSS) ... */
+
+/* === FIX: INTRO BUTTON STYLE === */
+.btn-intro {
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.btn-intro:hover {
+    background: var(--accent);
+    color: #000; /* Black text on hover for contrast */
+    box-shadow: 0 0 20px var(--accent);
+}
+
+/* ... (Keep existing CSS) ... */
+
+/* === CRT TERMINAL EFFECTS === */
+.crt-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+    );
+    background-size: 100% 4px; /* Scanline size */
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Make the terminal text glow */
+#preloader {
+    text-shadow: 0 0 5px var(--accent);
+}
+
+/* The "TV Turn Off" White Flash */
+.tv-flash {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 100%; height: 100%;
+    background: #fff;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ... (Keep existing CSS) ... */
+
+/* === HOLOGRAPHIC SPOTLIGHT (The Final Polish) === */
+.project-card, .info-card {
+    position: relative;
+    overflow: hidden; /* Keep glow inside */
+}
+
+/* The Glow Layer */
+.project-card::before, 
+.info-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        800px circle at var(--mouse-x) var(--mouse-y), 
+        var(--accent-dim), 
+        transparent 40%
+    );
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.5s ease;
+    pointer-events: none; /* Let clicks pass through */
+    z-index: 0;
+}
+
+/* Reveal on Hover */
+.project-card:hover::before, 
+.info-card:hover::before {
+    opacity: 1;
+}
+
+/* Ensure text stays on top of the glow */
+.project-card > *, 
+.info-card > * {
+    position: relative;
+    z-index: 1;
+}

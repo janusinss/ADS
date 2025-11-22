@@ -94,45 +94,90 @@ function initSmoothNav() {
     });
 }
 
-// === BOOT SEQUENCE ===
+// === BOOT SEQUENCE (CRT TV TURN OFF EFFECT) ===
 function simulateLoading() {
     const bar = document.getElementById('loader-bar');
     const logs = document.getElementById('boot-logs');
     const preloader = document.getElementById('preloader');
-    const bootText = ["INITIALIZING...", "MOUNTING DOM...", "COMPILING SHADERS...", "CONNECTING...", "DECRYPTING...", "SYSTEM READY."];
-    let width = 0; let logIndex = 0;
+    const flash = document.getElementById('tv-flash');
+    
+    document.body.classList.add('loading');
+
+    const bootText = [
+        "INITIALIZING CORE...",
+        "MOUNTING DOM...",
+        "Loading SHADERS...",
+        "Loading GPU...",
+        "Loading ASSETS...",
+        "SYSTEM READY."
+    ];
+
+    let width = 0;
+    let logIndex = 0;
 
     const addLog = (text) => {
         const p = document.createElement('div');
         p.innerHTML = `<span class="text-accent">>></span> ${text}`;
         logs.appendChild(p);
-        if (logs.children.length > 5) logs.removeChild(logs.firstChild);
+        if (logs.children.length > 6) logs.removeChild(logs.firstChild);
     };
 
     const interval = setInterval(() => {
-        width += Math.random() * 3;
+        width += Math.random() * 2.5; // Random speed
         if (width > 100) width = 100;
         bar.style.width = width + '%';
-        if (width > (logIndex + 1) * 15 && logIndex < bootText.length) { addLog(bootText[logIndex++]); }
+
+        // Add logs based on progress
+        if (width > (logIndex + 1) * 14 && logIndex < bootText.length) {
+            addLog(bootText[logIndex]);
+            logIndex++;
+        }
+
         if (width === 100) {
             clearInterval(interval);
             addLog("ACCESS GRANTED.");
+            
+            // === THE "TV TURN OFF" ANIMATION ===
+            const tl = gsap.timeline({
+                onComplete: () => document.body.classList.remove('loading')
+            });
+
+            // 1. Flash White (Bang!)
+            tl.to(flash, { opacity: 1, duration: 0.1, ease: "power2.in" })
+            
+            // 2. Collapse Vertically (Squeeze)
+              .to(preloader, { 
+                  scaleY: 0.005, 
+                  duration: 0.2, 
+                  ease: "power2.inOut",
+                  onStart: () => {
+                       flash.style.opacity = 0; // Hide flash instantly
+                       if (window.playIntroAnimation) window.playIntroAnimation();
+                  } 
+              })
+              
+            // 3. Collapse Horizontally (Zip) & Fade
+              .to(preloader, { 
+                  scaleX: 0, 
+                  duration: 0.2, 
+                  ease: "power2.in" 
+              })
+              
+            // 4. Hide Element
+              .set(preloader, { display: "none" });
+
+            // Trigger Rest of Site
             setTimeout(() => {
-                gsap.to(preloader, { yPercent: -100, duration: 1, ease: "power4.inOut" });
-                if (window.playIntroAnimation) window.playIntroAnimation();
                 animateItems('.fade-in');
-                scrambleText(document.querySelector('h1'));
-                
                 const h1 = document.querySelector('h1');
+                scrambleText(h1);
                 if(h1) h1.addEventListener('mouseenter', () => scrambleText(h1));
-                
                 initScrollSpy();
                 initFooterSystem();
-            }, 500);
+            }, 400);
         }
     }, 20);
 }
-
 // === 3D TILT ===
 function initTilt(element) {
     if (prefersReducedMotion) return;
