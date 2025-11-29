@@ -248,3 +248,26 @@ body.loading { cursor: default; overflow: hidden; }
 body.loading #cursor { opacity: 0 !important; }
 .blink { animation: blinker 1s linear infinite; }
 @keyframes blinker { 50% { opacity: 0; } }
+
+/* === FORCE SYSTEM CURSOR IN MODALS === */
+/* When a modal is open (not hidden), force system cursor */
+#add-modal:not(.hidden) *,
+#generic-modal:not(.hidden) *,
+#skill-modal:not(.hidden) * {
+    cursor: auto !important;
+}
+
+/* Specific pointers for buttons inside modal */
+#add-modal button, 
+#generic-modal button,
+#skill-modal button {
+    cursor: pointer !important;
+}
+
+/* Hide custom cursor dot when hovering over open modal */
+#add-modal:not(.hidden):hover ~ #cursor,
+#generic-modal:not(.hidden):hover ~ #cursor,
+#skill-modal:not(.hidden):hover ~ #cursor {
+    opacity: 0 !important;
+    display: none !important;
+}

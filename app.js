@@ -302,9 +302,14 @@ async function loadProjects() {
             <div class="project-card p-8 opacity-0 translate-y-8 group relative">
                 
                 ${isManagerMode ? `
-                    <button onclick="deleteProject(${p.id})" class="absolute top-4 right-4 text-red-500 hover:text-red-400 text-xs font-mono border border-red-500 px-2 py-1 z-50">
-                        [DELETE]
-                    </button>
+                    <div class="absolute top-4 right-4 flex gap-2 z-50">
+                        <button onclick='openEditProject(${JSON.stringify(p).replace(/'/g, "&#39;")})' class="text-accent hover:text-white text-xs font-mono border border-accent px-2 py-1 cursor-pointer bg-[#0f172a]">
+                            [EDIT]
+                        </button>
+                        <button onclick="deleteItem('projects', ${p.id})" class="text-red-500 hover:text-red-400 text-xs font-mono border border-red-500 px-2 py-1 cursor-pointer bg-[#0f172a]">
+                            [X]
+                        </button>
+                    </div>
                 ` : ''}
 
                 <div class="mb-6 border-b border-gray-500/20 pb-6">
@@ -342,11 +347,23 @@ async function loadSkills() {
     try {
         const res = await fetch(`${API_BASE}/skills_api.php`);
         const data = await res.json();
-        document.getElementById('skills-container').innerHTML = data.map(s => `
-            <div class="skill-tag px-4 py-3 opacity-0 translate-y-4 text-xs font-mono border border-gray-500/30 transition-colors cursor-default">
+        const container = document.getElementById('skills-container');
+        
+        let html = data.map(s => `
+            <div class="skill-tag px-4 py-3 opacity-0 translate-y-4 text-xs font-mono border border-gray-500/30 transition-colors cursor-default relative group">
                 ${s.name} <span class="text-accent">// ${s.proficiency}%</span>
+                ${isManagerMode ? `
+                <span onclick='openSkillModal("update", ${JSON.stringify(s)})' class="absolute -top-2 -right-2 bg-black border border-accent text-accent w-5 h-5 flex items-center justify-center rounded-full cursor-pointer hover:bg-accent hover:text-black z-50">✎</span>
+                <span onclick="deleteItem('skills', ${s.id})" class="absolute -bottom-2 -right-2 bg-black border border-red-500 text-red-500 w-5 h-5 flex items-center justify-center rounded-full cursor-pointer hover:bg-red-500 hover:text-black z-50">×</span>
+                ` : ''}
             </div>
         `).join('');
+
+        if(isManagerMode) {
+            html += `<div onclick='openSkillModal("add")' class="skill-tag px-4 py-3 text-xs border-dashed border-accent text-accent cursor-pointer hover:bg-accent hover:text-black opacity-0 translate-y-4">+ ADD SKILL</div>`;
+        }
+
+        container.innerHTML = html;
         animateItems('.skill-tag');
     } catch(e) {}
 }
@@ -355,15 +372,36 @@ async function loadGeneric(endpoint, id, renderFn) {
     try {
         const res = await fetch(`${API_BASE}/${endpoint}`);
         const data = await res.json();
-        document.getElementById(id).innerHTML = data.map(renderFn).join('');
+        const container = document.getElementById(id);
+        
+        // Determine type based on endpoint for the Add button
+        let type = 'item';
+        if(endpoint.includes('experience')) type = 'experience';
+        else if(endpoint.includes('education')) type = 'education';
+        else if(endpoint.includes('certification')) type = 'certification';
+        else if(endpoint.includes('achievement')) type = 'achievement';
+
+        let html = data.map(item => renderFn(item, type)).join('');
+
+        // Add the "ADD BUTTON" if in Manager Mode
+        if (isManagerMode) {
+            html += `
+                <div onclick='openGenericModal("${type}", "add")' 
+                     class="info-card p-4 border-dashed border-2 border-gray-700 text-center cursor-pointer hover:border-accent hover:text-accent opacity-50 hover:opacity-100 transition-all">
+                    <span class="font-mono text-xs">[ + ADD ${type.toUpperCase()} ]</span>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
         animateItems(`#${id} > div`);
     } catch(e) {}
 }
 
-// === RENDER HELPERS ===
-const renderExperience = exp => `
-    <div class="info-card p-6 opacity-0 translate-y-8 border-l-2 border-transparent transition-all">
-        <div class="flex justify-between items-baseline mb-2">
+// Updated Render Experience
+const renderExperience = (exp, type) => `
+    <div class="info-card p-6 opacity-0 translate-y-8 border-l-2 border-transparent transition-all relative group">
+        ${isManagerMode ? getManagerControls(type, exp) : ''} <div class="flex justify-between items-baseline mb-2">
             <h4 class="font-bold text-lg" data-scramble>${exp.position}</h4>
             <span class="text-xs font-mono text-accent">${exp.duration_text || ''}</span>
         </div>
@@ -372,10 +410,19 @@ const renderExperience = exp => `
     </div>
 `;
 
-const renderSimpleCard = item => `
-    <div class="info-card p-6 opacity-0 translate-y-8">
-        <h4 class="font-bold text-lg mb-1" data-scramble>${item.degree || item.title}</h4>
+// Updated Render Simple Card (Edu, Certs, Awards)
+const renderSimpleCard = (item, type) => `
+    <div class="info-card p-6 opacity-0 translate-y-8 relative group">
+        ${isManagerMode ? getManagerControls(type, item) : ''} <h4 class="font-bold text-lg mb-1" data-scramble>${item.degree || item.title}</h4>
         <p class="text-sm font-mono text-accent">${item.institution || item.issuing_organization}</p>
+    </div>
+`;
+
+// NEW: Helper for Buttons  
+const getManagerControls = (type, data) => `
+    <div class="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-50">
+        <button onclick='openGenericModal("${type}", "update", ${JSON.stringify(data).replace(/'/g, "&#39;")})' class="text-xs text-accent border border-accent px-2 hover:bg-accent hover:text-black cursor-pointer bg-black">[EDIT]</button>
+        <button onclick="deleteItem('${type}s', ${data.id})" class="text-xs text-red-500 border border-red-500 px-2 hover:bg-red-500 hover:text-black cursor-pointer bg-black">[X]</button>
     </div>
 `;
 
@@ -595,18 +642,38 @@ function toggleManagerMode() {
     btn.innerText = isManagerMode ? "[ EXIT ]" : "[ MANAGE ]";
     btn.style.color = isManagerMode ? "red" : "var(--accent)";
     
-    // Refresh the lists to show/hide delete buttons
+    // Reload ALL sections to show/hide buttons
     loadProjects(); 
-    // (You can add loadSkills(), loadExperience() here too if you want full CRUD everywhere)
+    loadSkills();
+    // Reload Background Sections
+    loadGeneric('experience_api.php?duration=true', 'experience-list', (data) => renderExperience(data, 'experience'));
+    loadGeneric('education_api.php', 'education-list', (data) => renderSimpleCard(data, 'education'));
+    loadGeneric('certifications_api.php', 'certifications-list', (data) => renderSimpleCard(data, 'certification'));
+    loadGeneric('achievements_api.php', 'achievements-list', (data) => renderSimpleCard(data, 'achievement'));
 }
 
 // === MODAL CONTROLS ===
 function openAddModal() {
-    document.getElementById('add-modal').classList.remove('hidden');
+    const modal = document.getElementById('add-modal');
+    const form = document.getElementById('add-project-form');
+    
+    // FIX: Reset Title & Form
+    modal.querySelector('h3').innerText = ">> ADD_PROJECT";
+    form.reset();
+    form.querySelector('[name="action"]').value = 'add';
+    form.querySelector('button[type="submit"]').innerText = "INITIALIZE PROJECT";
+
+    // FIX: Show Cursor
+    
+
+    modal.classList.remove('hidden');
 }
 
 function closeModal() {
-    document.getElementById('add-modal').classList.add('hidden');
+    document.querySelectorAll('.fixed.inset-0').forEach(el => el.classList.add('hidden'));
+    // FIX: Restore Custom Cursor
+    
+    document.getElementById('cursor').style.opacity = '1';
 }
 
 // === CRUD: ADD PROJECT ===
@@ -650,4 +717,169 @@ async function deleteProject(id) {
             loadProjects(); // Refresh list
         }
     } catch(err) { console.error(err); }
+}
+
+// === GENERIC CRUD LOGIC ===
+
+function openGenericModal(type, action, data = {}) {
+    const modal = document.getElementById('generic-modal');
+    const form = document.getElementById('generic-form');
+    const fieldsDiv = document.getElementById('modal-fields');
+    
+    document.getElementById('modal-title').innerText = `>> ${action.toUpperCase()}_${type.toUpperCase()}`;
+    document.getElementById('item-id').value = data.id || '';
+    document.getElementById('item-type').value = type;
+    document.getElementById('form-action').value = action;
+    
+    fieldsDiv.innerHTML = ''; 
+
+    const configs = {
+        experience: [
+            { label: 'POSITION', name: 'position', val: data.position },
+            { label: 'COMPANY', name: 'company', val: data.company },
+            { label: 'DESCRIPTION', name: 'description', type: 'textarea', val: data.description },
+            { label: 'START DATE', name: 'start_date', type: 'date', val: data.start_date }
+        ],
+        education: [
+            { label: 'DEGREE', name: 'degree', val: data.degree },
+            { label: 'INSTITUTION', name: 'institution', val: data.institution },
+            { label: 'START DATE', name: 'start_date', type: 'date', val: data.start_date }
+        ],
+        certification: [
+            { label: 'TITLE', name: 'title', val: data.title },
+            { label: 'ORGANIZATION', name: 'issuing_organization', val: data.issuing_organization },
+            { label: 'DATE', name: 'issue_date', type: 'date', val: data.issue_date }
+        ],
+        achievement: [
+            { label: 'TITLE', name: 'title', val: data.title },
+            { label: 'DESCRIPTION', name: 'description', val: data.description },
+            { label: 'DATE', name: 'date_achieved', type: 'date', val: data.date_achieved }
+        ]
+    };
+
+    (configs[type] || []).forEach(field => {
+        const val = field.val || '';
+        const inputHtml = field.type === 'textarea' 
+            ? `<textarea name="${field.name}" class="w-full p-2 bg-black/20 border border-gray-700 text-primary outline-none focus:border-accent">${val}</textarea>`
+            : `<input type="${field.type || 'text'}" name="${field.name}" value="${val}" class="w-full p-2 bg-black/20 border border-gray-700 text-primary outline-none focus:border-accent">`;
+        
+        fieldsDiv.innerHTML += `
+            <div><label class="block text-xs font-mono text-secondary mb-1">${field.label}</label>${inputHtml}</div>
+        `;
+    });
+
+    // FIX: Show Cursor
+
+    modal.classList.remove('hidden');
+}
+
+function closeGenericModal() {
+    document.getElementById('generic-modal').classList.add('hidden');
+    // FIX: Restore Custom Cursor
+    
+    document.getElementById('cursor').style.opacity = '1';
+}
+
+// 2. Handle Generic Submit
+document.getElementById('generic-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    const type = data.type; // 'experience', 'education', etc.
+    
+    // Map type to API endpoint
+    const endpoints = {
+        experience: 'experience_api.php',
+        education: 'education_api.php',
+        certification: 'certifications_api.php',
+        achievement: 'achievements_api.php'
+    };
+
+    try {
+        const res = await fetch(`${API_BASE}/${endpoints[type]}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        if(res.ok) {
+            closeGenericModal();
+            // Simple refresh of all data
+            loadAllData();
+            alert("DATABASE UPDATED");
+        }
+    } catch(err) { alert("ERROR"); }
+});
+
+function openSkillModal(action, data = {}) {
+    // FIX: Show Cursor
+    
+    document.getElementById('skill-modal').classList.remove('hidden');
+    document.getElementById('skill-action').value = action;
+    document.getElementById('skill-id').value = data.id || '';
+    document.getElementById('skill-name').value = data.name || '';
+    document.getElementById('skill-proficiency').value = data.proficiency || '';
+}
+
+document.getElementById('skill-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    try {
+        await fetch(`${API_BASE}/skills_api.php`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(Object.fromEntries(formData))
+        });
+        document.getElementById('skill-modal').classList.add('hidden');
+        loadSkills();
+    } catch(e) {}
+});
+
+// 4. Generic Delete
+async function deleteItem(endpointPrefix, id) {
+    if(!confirm("DELETE NODE?")) return;
+    // Map 'projects' -> 'projects_api.php', 'skills' -> 'skills_api.php'
+    let api = `${endpointPrefix}_api.php`;
+    // Handle singular/plural mismatch manually if needed or ensure prefix matches
+    if(endpointPrefix === 'education') api = 'education_api.php'; 
+    
+    await fetch(`${API_BASE}/${api}`, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'delete', id: id })
+    });
+    // Refresh current view manually or via toggle
+    toggleManagerMode(); // Hack to re-trigger load with new data
+    toggleManagerMode(); 
+}
+
+// 5. Edit Project Helper (Add this near openAddModal)
+function openEditProject(p) {
+    const modal = document.getElementById('add-modal');
+    const form = document.getElementById('add-project-form');
+    
+    // FIX: Update Title
+    modal.querySelector('h3').innerText = ">> UPDATE_PROJECT";
+    
+    // Fill form
+    form.querySelector('[name="action"]').value = 'update';
+    
+    if(!form.querySelector('[name="id"]')) {
+        const idInput = document.createElement('input');
+        idInput.type = 'hidden';
+        idInput.name = 'id';
+        form.appendChild(idInput);
+    }
+    form.querySelector('[name="id"]').value = p.id;
+    
+    form.querySelector('[name="title"]').value = p.title;
+    form.querySelector('[name="description"]').value = p.description;
+    form.querySelector('[name="project_url"]').value = p.project_url;
+    form.querySelector('[name="repo_url"]').value = p.repo_url;
+    form.querySelector('[name="image_url"]').value = p.image_url;
+    
+    form.querySelector('button[type="submit"]').innerText = "UPDATE PROJECT";
+    
+    // FIX: Show Cursor
+    
+    
+    modal.classList.remove('hidden');
 }

@@ -454,6 +454,42 @@
     document.addEventListener('DOMContentLoaded', () => { initWebGL(); loadTheme(); });
 </script>
     
+    <div id="generic-modal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-[#0f172a] border border-accent p-8 max-w-md w-full relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+            <button onclick="closeGenericModal()" class="absolute top-4 right-4 text-secondary hover:text-accent">✕</button>
+            <h3 id="modal-title" class="text-xl font-bold mb-6 text-accent font-mono">>> EDIT_DATA</h3>
+            
+            <form id="generic-form" class="space-y-4">
+                <input type="hidden" name="id" id="item-id">
+                <input type="hidden" name="type" id="item-type"> <input type="hidden" name="action" id="form-action"> <div id="modal-fields" class="space-y-4">
+                    </div>
+
+                <button type="submit" class="w-full py-3 mt-4 btn-minimal text-xs hover:bg-accent hover:text-black">SAVE DATA</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="skill-modal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-[#0f172a] border border-accent p-8 max-w-sm w-full relative">
+            <button onclick="document.getElementById('skill-modal').classList.add('hidden')" class="absolute top-4 right-4 text-secondary hover:text-accent">✕</button>
+            <h3 class="text-xl font-bold mb-6 text-accent font-mono">>> SKILL_NODE</h3>
+            <form id="skill-form" class="space-y-4">
+                <input type="hidden" name="action" id="skill-action">
+                <input type="hidden" name="id" id="skill-id">
+                
+                <div>
+                    <label class="block text-xs font-mono text-secondary mb-1">SKILL NAME</label>
+                    <input type="text" name="name" id="skill-name" required class="w-full p-2 text-sm bg-black/20 border border-gray-700 text-primary outline-none focus:border-accent">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-secondary mb-1">PROFICIENCY (0-100)</label>
+                    <input type="number" name="proficiency" id="skill-proficiency" required class="w-full p-2 text-sm bg-black/20 border border-gray-700 text-primary outline-none focus:border-accent">
+                </div>
+                <button type="submit" class="w-full py-3 btn-minimal text-xs hover:bg-accent hover:text-black">SAVE SKILL</button>
+            </form>
+        </div>
+    </div>
+
 <script src="app.js"></script>
 </body>
 </html>
