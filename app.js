@@ -821,7 +821,7 @@ let isManagerMode = false;
 function toggleManagerMode() {
   isManagerMode = !isManagerMode;
   const btn = document.getElementById("manager-toggle");
-  btn.innerText = isManagerMode ? "[ EXIT ]" : "[ MANAGE ]";
+  btn.innerText = isManagerMode ? "[ EXIT_CONTROL ]" : "[ SYSTEM_CONTROL ]";
   btn.style.color = isManagerMode ? "red" : "var(--accent)";
 
   // Reload ALL sections to show/hide buttons
