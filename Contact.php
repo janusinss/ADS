@@ -35,7 +35,7 @@ class Contact
         $this->visitor_email = filter_var($this->visitor_email, FILTER_SANITIZE_EMAIL);
         $this->subject = htmlspecialchars(strip_tags($this->subject));
         $this->message = htmlspecialchars(strip_tags($this->message));
-        
+
         // Validate email
         if (!filter_var($this->visitor_email, FILTER_VALIDATE_EMAIL)) {
             printf("Error: Invalid email format.\n");

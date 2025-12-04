@@ -17,7 +17,7 @@ if ($method === 'GET') {
     // Check for duration parameter
     if (isset($_GET['duration']) && $_GET['duration'] === 'true') {
         $result = $experience->getWithDuration();
-    } 
+    }
     // Check for total years
     elseif (isset($_GET['total_years']) && $_GET['total_years'] === 'true') {
         $years = $experience->getTotalYears();
@@ -29,7 +29,7 @@ if ($method === 'GET') {
     else {
         $result = $experience->read();
     }
-    
+
     $num = $result->rowCount();
 
     if ($num > 0) {

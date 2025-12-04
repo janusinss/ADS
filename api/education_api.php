@@ -22,7 +22,7 @@ if ($method === 'GET') {
         echo json_encode($summary);
         exit;
     }
-    
+
     // Get all education records
     $result = $education->read();
     $num = $result->rowCount();

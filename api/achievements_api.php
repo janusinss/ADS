@@ -17,7 +17,7 @@ if ($method === 'GET') {
     // Check for category filter
     if (isset($_GET['category'])) {
         $result = $achievement->getByCategory($_GET['category']);
-    } 
+    }
     // Get category summary
     elseif (isset($_GET['summary']) && $_GET['summary'] === 'true') {
         $result = $achievement->getByCategory();
@@ -26,7 +26,7 @@ if ($method === 'GET') {
     else {
         $result = $achievement->read();
     }
-    
+
     $num = $result->rowCount();
 
     if ($num > 0) {

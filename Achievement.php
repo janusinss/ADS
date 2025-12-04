@@ -28,7 +28,7 @@ class Achievement
     {
         $query = 'SELECT * FROM ' . $this->table . ' 
                   ORDER BY date_achieved DESC';
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -56,7 +56,7 @@ class Achievement
                       ORDER BY count DESC';
             $stmt = $this->conn->prepare($query);
         }
-        
+
         $stmt->execute();
         return $stmt;
     }

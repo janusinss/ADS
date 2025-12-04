@@ -31,7 +31,7 @@ class Certification
     {
         $query = 'SELECT * FROM ' . $this->table . ' 
                   ORDER BY issue_date DESC';
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -46,7 +46,7 @@ class Certification
         $query = 'SELECT * FROM ' . $this->table . ' 
                   WHERE expiry_date IS NULL OR expiry_date >= CURDATE()
                   ORDER BY issue_date DESC';
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;

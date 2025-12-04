@@ -20,7 +20,7 @@ if ($method === 'GET') {
     } else {
         $result = $certification->read();
     }
-    
+
     $num = $result->rowCount();
 
     if ($num > 0) {

@@ -34,7 +34,7 @@ class Education
     {
         $query = 'SELECT * FROM ' . $this->table . ' 
                   ORDER BY is_current DESC, start_date DESC';
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -52,7 +52,7 @@ class Education
                     MIN(start_date) as earliest_start,
                     MAX(end_date) as latest_end
                   FROM ' . $this->table;
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -71,7 +71,7 @@ class Education
                   FROM ' . $this->table . '
                   GROUP BY degree
                   ORDER BY count DESC';
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;

@@ -1,44 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Janus Dominic - Creative Developer</title>
-    <meta name="description" content="Janus Dominic - Creative Full-Stack Developer. Interactive 3D portfolio built with WebGL, Three.js, and GSAP.">
-    <meta name="keywords" content="Janus Dominic, Web Developer, Creative Developer, Three.js, WebGL, Portfolio, PHP, React">
-    <meta name="author" content="Janus Dominic">
-    
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://your-portfolio-url.com/">
-    <meta property="og:title" content="Janus Dominic | Creative Developer">
-    <meta property="og:description" content="Interactive 3D portfolio featuring WebGL physics, fluid simulations, and cinematic UI.">
-    <meta property="og:image" content="https://your-portfolio-url.com/og-image.jpg"> 
-    
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
-    
+    <meta name="description"
+        content="Janus Dominic - Creative Full-Stack Developer. Interactive 3D portfolio built with WebGL, Three.js, and GSAP." />
+    <meta name="keywords"
+        content="Janus Dominic, Web Developer, Creative Developer, Three.js, WebGL, Portfolio, PHP, React" />
+    <meta name="author" content="Janus Dominic" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://your-portfolio-url.com/" />
+    <meta property="og:title" content="Janus Dominic | Creative Developer" />
+    <meta property="og:description"
+        content="Interactive 3D portfolio featuring WebGL physics, fluid simulations, and cinematic UI." />
+    <meta property="og:image" content="https://your-portfolio-url.com/og-image.jpg" />
+
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>" />
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-    <div class="fixed top-0 left-0 h-[4px] z-[9001] transition-all duration-100 ease-out" id="scroll-progress" style="width: 0%"></div>
-    
+    <div class="fixed top-0 left-0 h-[4px] z-[9001] transition-all duration-100 ease-out" id="scroll-progress"
+        style="width: 0%"></div>
+
     <div class="film-grain"></div>
 
-    <div id="preloader" class="fixed inset-0 z-[9999] bg-[#050505] flex flex-col items-center justify-center font-mono text-xs sm:text-sm text-secondary overflow-hidden">
+    <div id="preloader"
+        class="fixed inset-0 z-[9999] bg-[#050505] flex flex-col items-center justify-center font-mono text-xs sm:text-sm text-secondary overflow-hidden">
         <div class="crt-overlay"></div>
         <div id="tv-flash" class="tv-flash"></div>
-        
+
         <div class="w-64 sm:w-80 relative z-10">
             <div class="flex justify-between mb-4 border-b border-gray-800/50 pb-2 opacity-70">
                 <span>SYSTEM_BOOT.exe</span>
                 <span>V 2.4.0</span>
             </div>
-            <div id="boot-logs" class="h-32 overflow-hidden flex flex-col justify-end mb-4 text-gray-400 leading-tight font-bold"></div>
-            
+            <div id="boot-logs"
+                class="h-32 overflow-hidden flex flex-col justify-end mb-4 text-gray-400 leading-tight font-bold"></div>
+
             <div class="w-full h-[2px] bg-gray-800/50 mt-2 relative overflow-hidden">
                 <div id="loader-bar" class="absolute top-0 left-0 h-full w-0"></div>
             </div>
@@ -49,19 +58,27 @@
     <div id="cursor"></div>
 
     <div class="side-nav">
-        <button id="theme-dark" onclick="setTheme('dark')" class="theme-toggle">DARK</button>
-        <button id="theme-light" onclick="setTheme('light')" class="theme-toggle active">WARM</button>
+        <button id="theme-dark" onclick="setTheme('dark')" class="theme-toggle">
+            DARK
+        </button>
+        <button id="theme-light" onclick="setTheme('light')" class="theme-toggle active">
+            WARM
+        </button>
     </div>
-    
+
     <button id="mute-btn" onclick="toggleMute()">SND</button>
 
     <div class="content-wrapper">
         <header class="px-6 lg:px-16 py-8 lg:py-12 min-h-screen flex flex-col justify-center relative z-10">
             <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div>
-                    <h1 class="text-5xl lg:text-8xl font-bold mb-4 tracking-tighter mix-blend-difference" data-scramble>Janus Dominic</h1>
-                    <p class="text-lg lg:text-2xl text-secondary font-light mb-12 font-mono" id="professional-title">Full-Stack Developer</p>
-                    
+                    <h1 class="text-5xl lg:text-8xl font-bold mb-4 tracking-tighter mix-blend-difference" data-scramble>
+                        Janus Dominic
+                    </h1>
+                    <p class="text-lg lg:text-2xl text-secondary font-light mb-12 font-mono" id="professional-title">
+                        Full-Stack Developer
+                    </p>
+
                     <nav class="flex gap-8 text-sm font-medium tracking-widest uppercase">
                         <a href="#projects" class="nav-item">Projects</a>
                         <a href="#info" class="nav-item">Info</a>
@@ -74,10 +91,11 @@
 
         <main class="px-6 lg:px-16 pb-32">
             <div class="max-w-7xl mx-auto">
-                
                 <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-32">
                     <div class="lg:col-start-2">
-                        <p class="text-lg lg:text-xl font-light leading-relaxed mb-8" id="bio-text">Loading...</p>
+                        <p class="text-lg lg:text-xl font-light leading-relaxed mb-8" id="bio-text">
+                            Loading...
+                        </p>
                         <div class="flex gap-6">
                             <a href="#contact" class="btn-minimal">Contact Me</a>
                             <a href="#projects" class="btn-minimal">View Work</a>
@@ -99,12 +117,32 @@
                     <h2 class="section-title" data-scramble>Background</h2>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
                         <div class="space-y-12">
-                            <div><h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">Experience</h3><div id="experience-list" class="space-y-6"></div></div>
-                            <div><h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">Education</h3><div id="education-list" class="space-y-6"></div></div>
+                            <div>
+                                <h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">
+                                    Experience
+                                </h3>
+                                <div id="experience-list" class="space-y-6"></div>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">
+                                    Education
+                                </h3>
+                                <div id="education-list" class="space-y-6"></div>
+                            </div>
                         </div>
                         <div class="space-y-12">
-                            <div><h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">Certifications</h3><div id="certifications-list" class="space-y-6"></div></div>
-                            <div><h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">Achievements</h3><div id="achievements-list" class="space-y-6"></div></div>
+                            <div>
+                                <h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">
+                                    Certifications
+                                </h3>
+                                <div id="certifications-list" class="space-y-6"></div>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-mono text-accent mb-6 uppercase tracking-wider">
+                                    Achievements
+                                </h3>
+                                <div id="achievements-list" class="space-y-6"></div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -113,18 +151,25 @@
                     <h2 class="section-title" data-scramble>Initialize Handshake</h2>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         <div>
-                            <p class="text-secondary mb-8 font-light">Ready to build something impossible? Send me a transmission.</p>
+                            <p class="text-secondary mb-8 font-light">
+                                Ready to build something impossible? Send me a transmission.
+                            </p>
                             <div class="space-y-4 text-sm font-mono" id="contact-info"></div>
                         </div>
                         <form id="contact-form" class="space-y-4">
                             <div id="form-message" class="hidden p-3 text-sm rounded"></div>
                             <div class="grid grid-cols-2 gap-4">
-                                <input type="text" name="visitor_name" placeholder="NAME" required class="w-full p-4 text-sm">
-                                <input type="email" name="visitor_email" placeholder="EMAIL" required class="w-full p-4 text-sm">
+                                <input type="text" name="visitor_name" placeholder="NAME" required
+                                    class="w-full p-4 text-sm" />
+                                <input type="email" name="visitor_email" placeholder="EMAIL" required
+                                    class="w-full p-4 text-sm" />
                             </div>
-                            <input type="text" name="subject" placeholder="SUBJECT" class="w-full p-4 text-sm">
-                            <textarea name="message" rows="4" placeholder="MESSAGE" required class="w-full p-4 text-sm resize-none"></textarea>
-                            <button type="submit" class="btn-minimal w-full py-4 text-xs tracking-[0.2em] uppercase">Transmit</button>
+                            <input type="text" name="subject" placeholder="SUBJECT" class="w-full p-4 text-sm" />
+                            <textarea name="message" rows="4" placeholder="MESSAGE" required
+                                class="w-full p-4 text-sm resize-none"></textarea>
+                            <button type="submit" class="btn-minimal w-full py-4 text-xs tracking-[0.2em] uppercase">
+                                Transmit
+                            </button>
                         </form>
                     </div>
                 </section>
@@ -132,93 +177,139 @@
         </main>
 
         <footer class="px-6 py-8 border-t border-gray-800/50 mt-12">
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-xs font-mono text-secondary/60 gap-4">
-                <div class="flex items-center gap-2"><span>&copy; <span id="footer-year">2024</span> JANUS DOMINIC</span></div>
+            <div
+                class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-xs font-mono text-secondary/60 gap-4">
+                <div class="flex items-center gap-2">
+                    <span>&copy; <span id="footer-year">2024</span> JANUS DOMINIC</span>
+                </div>
                 <div class="flex items-center gap-6">
-                    <div class="flex items-center"><span class="status-dot"></span><span>SYSTEM ONLINE</span></div>
-                    <div class="hidden md:block">UPTIME: <span id="system-uptime" class="text-accent">00:00:00</span></div>
+                    <div class="flex items-center">
+                        <span class="status-dot"></span><span>SYSTEM ONLINE</span>
+                    </div>
+                    <div class="hidden md:block">
+                        UPTIME:
+                        <span id="system-uptime" class="text-accent">00:00:00</span>
+                    </div>
                     <div>LOC: <span class="text-accent">PHILIPPINES</span></div>
                 </div>
             </div>
         </footer>
     </div>
 
-<button id="manager-toggle" class="fixed bottom-4 left-8 z-50 text-xs font-mono text-accent opacity-50 hover:opacity-100 transition-opacity cursor-pointer" onclick="toggleManagerMode()">[ MANAGE ]</button>
+    <button id="manager-toggle"
+        class="fixed bottom-4 left-8 z-50 text-xs font-mono text-accent opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
+        onclick="toggleManagerMode()">
+        [ MANAGE ]
+    </button>
 
-<div id="add-modal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-[#0f172a] border border-accent p-8 max-w-md w-full relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-        <button onclick="closeModal()" class="absolute top-4 right-4 text-secondary hover:text-accent">✕</button>
-        <h3 class="text-xl font-bold mb-6 text-accent font-mono">>> ADD_NODE</h3>
-        
-        <form id="add-project-form" class="space-y-4">
-            <input type="hidden" name="action" value="add"> <div>
-                <label class="block text-xs font-mono text-secondary mb-1">TITLE</label>
-                <input type="text" name="title" required class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none">
-            </div>
-            
-            <div>
-                <label class="block text-xs font-mono text-secondary mb-1">DESCRIPTION</label>
-                <textarea name="description" required class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none" rows="3"></textarea>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4">
+    <div id="add-modal"
+        class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-[#0f172a] border border-accent p-8 max-w-md w-full relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-secondary hover:text-accent">
+                ✕
+            </button>
+            <h3 class="text-xl font-bold mb-6 text-accent font-mono">
+                >> ADD_NODE
+            </h3>
+
+            <form id="add-project-form" class="space-y-4">
+                <input type="hidden" name="action" value="add" />
                 <div>
-                    <label class="block text-xs font-mono text-secondary mb-1">PROJECT URL</label>
-                    <input type="text" name="project_url" class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none">
+                    <label class="block text-xs font-mono text-secondary mb-1">TITLE</label>
+                    <input type="text" name="title" required
+                        class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none" />
                 </div>
+
                 <div>
-                    <label class="block text-xs font-mono text-secondary mb-1">REPO URL</label>
-                    <input type="text" name="repo_url" class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none">
+                    <label class="block text-xs font-mono text-secondary mb-1">DESCRIPTION</label>
+                    <textarea name="description" required
+                        class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none"
+                        rows="3"></textarea>
                 </div>
-            </div>
 
-             <div>
-                <label class="block text-xs font-mono text-secondary mb-1">IMAGE URL</label>
-                <input type="text" name="image_url" placeholder="https://..." class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none">
-            </div>
-            
-            <input type="hidden" name="project_date" value="2024-01-01">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-mono text-secondary mb-1">PROJECT URL</label>
+                        <input type="text" name="project_url"
+                            class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-secondary mb-1">REPO URL</label>
+                        <input type="text" name="repo_url"
+                            class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none" />
+                    </div>
+                </div>
 
-            <button type="submit" class="w-full py-3 mt-4 btn-minimal text-xs hover:bg-accent hover:text-black">INITIALIZE PROJECT</button>
-        </form>
+                <div>
+                    <label class="block text-xs font-mono text-secondary mb-1">IMAGE URL</label>
+                    <input type="text" name="image_url" placeholder="https://..."
+                        class="w-full p-2 text-sm bg-black/20 border border-gray-700 focus:border-accent text-primary outline-none" />
+                </div>
+
+                <input type="hidden" name="project_date" value="2024-01-01" />
+
+                <button type="submit" class="w-full py-3 mt-4 btn-minimal text-xs hover:bg-accent hover:text-black">
+                    INITIALIZE PROJECT
+                </button>
+            </form>
+        </div>
     </div>
-</div>
 
-<script>
-    let scene, camera, renderer, mesh, heroGroup;
-    let heroMaterials = { planet: null, ringInner: null, ringMiddle: null, ringOuter: null, particles: null };
-    let lights = { ambient: null, point: null, rim: null };
-    let isDark = localStorage.getItem('theme') === 'dark';
-    let mouseX = 0.5, mouseY = 0.5, targetX = 0.5, targetY = 0.5;
+    <script>
+        let scene, camera, renderer, mesh, heroGroup;
+        let heroMaterials = {
+            planet: null,
+            ringInner: null,
+            ringMiddle: null,
+            ringOuter: null,
+            particles: null,
+        };
+        let lights = { ambient: null, point: null, rim: null };
+        let isDark = localStorage.getItem("theme") === "dark";
+        let mouseX = 0.5,
+            mouseY = 0.5,
+            targetX = 0.5,
+            targetY = 0.5;
 
-    function initWebGL() {
-        const canvas = document.getElementById('webgl-canvas');
-        scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 15; 
+        function initWebGL() {
+            const canvas = document.getElementById("webgl-canvas");
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(
+                75,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.z = 15;
 
-        renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+            renderer = new THREE.WebGLRenderer({
+                canvas,
+                alpha: true,
+                antialias: true,
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 
-        // === BACKGROUND SHADER (VELOCITY RGB SHIFT) ===
-        const material = new THREE.ShaderMaterial({
-            uniforms: {
-                u_time: { value: 0 },
-                u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
-                u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-                u_dark: { value: isDark ? 1.0 : 0.0 },
-                u_scroll: { value: 0.0 },
-                u_rgbShift: { value: 0.0 } // Velocity variable
-            },
-            vertexShader: `
+            // === BACKGROUND SHADER (VELOCITY RGB SHIFT) ===
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    u_time: { value: 0 },
+                    u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
+                    u_resolution: {
+                        value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+                    },
+                    u_dark: { value: isDark ? 1.0 : 0.0 },
+                    u_scroll: { value: 0.0 },
+                    u_rgbShift: { value: 0.0 }, // Velocity variable
+                },
+                vertexShader: `
                 varying vec2 vUv;
                 void main() {
                     vUv = uv;
                     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
                 }
             `,
-            fragmentShader: `
+                fragmentShader: `
                 uniform float u_time;
                 uniform vec2 u_mouse;
                 uniform vec2 u_resolution;
@@ -320,176 +411,320 @@
 
                     gl_FragColor = vec4(color, 1.0);
                 }
-            `
-        });
+            `,
+            });
 
-        const geometry = new THREE.PlaneGeometry(20, 20, 1, 1);
-        mesh = new THREE.Mesh(geometry, material);
-        scene.add(mesh);
+            const geometry = new THREE.PlaneGeometry(20, 20, 1, 1);
+            mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
 
-        createHeroObject();
-        
-        lights.ambient = new THREE.AmbientLight(0xffffff, 0.5); scene.add(lights.ambient);
-        lights.point = new THREE.PointLight(0xffffff, 2); lights.point.position.set(5, 5, 5); scene.add(lights.point);
-        lights.rim = new THREE.SpotLight(0xffffff, 5, 20, 0.5, 0.5, 1); lights.rim.position.set(-2, 4, 0); lights.rim.lookAt(3.5, 0, 0); scene.add(lights.rim);
+            createHeroObject();
 
-        updateHeroTheme(isDark);
-        setupScrollAnimation();
+            lights.ambient = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(lights.ambient);
+            lights.point = new THREE.PointLight(0xffffff, 2);
+            lights.point.position.set(5, 5, 5);
+            scene.add(lights.point);
+            lights.rim = new THREE.SpotLight(0xffffff, 5, 20, 0.5, 0.5, 1);
+            lights.rim.position.set(-2, 4, 0);
+            lights.rim.lookAt(3.5, 0, 0);
+            scene.add(lights.rim);
 
-        // SCROLL VELOCITY TRACKER
-        let lastScrollY = 0;
-        let targetVel = 0;
-        let currentVel = 0;
+            updateHeroTheme(isDark);
+            setupScrollAnimation();
 
-        function animate() {
-            requestAnimationFrame(animate);
-            mouseX += (targetX - mouseX) * 0.05; mouseY += (targetY - mouseY) * 0.05;
-            
-            // UPDATE SHADER UNIFORMS
-            material.uniforms.u_time.value += 0.01; 
-            material.uniforms.u_mouse.value.set(mouseX, mouseY);
-            
-            // VELOCITY DECAY FOR RGB SHIFT
-            currentVel += (targetVel - currentVel) * 0.1;
-            material.uniforms.u_rgbShift.value = currentVel;
-            targetVel *= 0.9; // Decay back to 0
+            // SCROLL VELOCITY TRACKER
+            let lastScrollY = 0;
+            let targetVel = 0;
+            let currentVel = 0;
 
-            if (heroGroup) {
-                const t = material.uniforms.u_time.value;
-                heroGroup.children[0].rotation.y = t * 0.05; heroGroup.children[0].rotation.z = Math.sin(t * 0.5) * 0.05;
-                heroGroup.children[1].children[0].rotation.z = t * 0.1;
-                heroGroup.children[1].children[1].rotation.z = t * -0.02;
-                heroGroup.children[1].children[2].rotation.z = t * 0.05;
-                heroGroup.position.y += Math.sin(t) * 0.002;
+            function animate() {
+                requestAnimationFrame(animate);
+                mouseX += (targetX - mouseX) * 0.05;
+                mouseY += (targetY - mouseY) * 0.05;
+
+                // UPDATE SHADER UNIFORMS
+                material.uniforms.u_time.value += 0.01;
+                material.uniforms.u_mouse.value.set(mouseX, mouseY);
+
+                // VELOCITY DECAY FOR RGB SHIFT
+                currentVel += (targetVel - currentVel) * 0.1;
+                material.uniforms.u_rgbShift.value = currentVel;
+                targetVel *= 0.9; // Decay back to 0
+
+                if (heroGroup) {
+                    const t = material.uniforms.u_time.value;
+                    heroGroup.children[0].rotation.y = t * 0.05;
+                    heroGroup.children[0].rotation.z = Math.sin(t * 0.5) * 0.05;
+                    heroGroup.children[1].children[0].rotation.z = t * 0.1;
+                    heroGroup.children[1].children[1].rotation.z = t * -0.02;
+                    heroGroup.children[1].children[2].rotation.z = t * 0.05;
+                    heroGroup.position.y += Math.sin(t) * 0.002;
+                }
+                renderer.render(scene, camera);
             }
-            renderer.render(scene, camera);
+            animate();
+
+            document.addEventListener("mousemove", (e) => {
+                targetX = e.clientX / window.innerWidth;
+                targetY = 1.0 - e.clientY / window.innerHeight;
+            });
+
+            // SCROLL LISTENER
+            window.addEventListener("scroll", () => {
+                const maxScroll = document.body.scrollHeight - window.innerHeight;
+                const scrollPct = window.scrollY / maxScroll;
+                material.uniforms.u_scroll.value = scrollPct;
+
+                const progressBar = document.getElementById("scroll-progress");
+                if (progressBar) progressBar.style.width = `${scrollPct * 100}%`;
+
+                // CALCULATE VELOCITY
+                const v = Math.abs(window.scrollY - lastScrollY);
+                targetVel = Math.min(v * 0.05, 0.5); // Cap at 0.5 intensity
+                lastScrollY = window.scrollY;
+            });
+
+            window.addEventListener("resize", () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                material.uniforms.u_resolution.value.set(
+                    window.innerWidth,
+                    window.innerHeight
+                );
+                ScrollTrigger.refresh();
+            });
         }
-        animate();
 
-        document.addEventListener('mousemove', e => { targetX = e.clientX / window.innerWidth; targetY = 1.0 - (e.clientY / window.innerHeight); });
-        
-        // SCROLL LISTENER
-        window.addEventListener('scroll', () => { 
-            const maxScroll = document.body.scrollHeight - window.innerHeight;
-            const scrollPct = window.scrollY / maxScroll;
-            material.uniforms.u_scroll.value = scrollPct;
-            
-            const progressBar = document.getElementById('scroll-progress');
-            if (progressBar) progressBar.style.width = `${scrollPct * 100}%`;
+        window.playIntroAnimation = function () {
+            gsap.to(camera.position, {
+                z: 5,
+                duration: 2.5,
+                ease: "expo.out",
+                delay: 0.2,
+            });
+            if (heroGroup)
+                gsap.from(heroGroup.rotation, {
+                    y: Math.PI * 1,
+                    z: 0.5,
+                    duration: 2.5,
+                    ease: "expo.out",
+                });
+        };
 
-            // CALCULATE VELOCITY
-            const v = Math.abs(window.scrollY - lastScrollY);
-            targetVel = Math.min(v * 0.05, 0.5); // Cap at 0.5 intensity
-            lastScrollY = window.scrollY;
-        });
+        function createHeroObject() {
+            heroGroup = new THREE.Group();
+            heroMaterials.planet = new THREE.MeshPhysicalMaterial({
+                roughness: 0.15,
+                transmission: 0.6,
+                thickness: 1.5,
+                flatShading: true,
+            });
+            heroGroup.add(
+                new THREE.Mesh(
+                    new THREE.IcosahedronGeometry(1.2, 1),
+                    heroMaterials.planet
+                )
+            );
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight); material.uniforms.u_resolution.value.set(window.innerWidth, window.innerHeight);
-            ScrollTrigger.refresh();
-        });
-    }
+            const rings = new THREE.Group();
+            rings.rotation.x = Math.PI / 2.5;
+            rings.rotation.y = Math.PI / 12;
+            heroMaterials.ringInner = new THREE.MeshBasicMaterial({
+                wireframe: true,
+                side: THREE.DoubleSide,
+                transparent: true,
+            });
+            rings.add(
+                new THREE.Mesh(
+                    new THREE.RingGeometry(1.6, 2.2, 64, 2),
+                    heroMaterials.ringInner
+                )
+            );
 
-    window.playIntroAnimation = function() {
-        gsap.to(camera.position, { z: 5, duration: 2.5, ease: "expo.out", delay: 0.2 });
-        if(heroGroup) gsap.from(heroGroup.rotation, { y: Math.PI * 1, z: 0.5, duration: 2.5, ease: "expo.out" });
-    };
+            const pGeo = new THREE.BufferGeometry();
+            const pPos = new Float32Array(1200);
+            for (let i = 0; i < 1200; i += 3) {
+                const a = Math.random() * Math.PI * 2;
+                const r = 2.3 + Math.random() * 0.8;
+                pPos[i] = Math.cos(a) * r;
+                pPos[i + 1] = Math.sin(a) * r;
+                pPos[i + 2] = (Math.random() - 0.5) * 0.1;
+            }
+            pGeo.setAttribute("position", new THREE.BufferAttribute(pPos, 3));
+            heroMaterials.particles = new THREE.PointsMaterial({
+                size: 0.03,
+                transparent: true,
+            });
+            rings.add(new THREE.Points(pGeo, heroMaterials.particles));
 
-    function createHeroObject() {
-        heroGroup = new THREE.Group();
-        heroMaterials.planet = new THREE.MeshPhysicalMaterial({ roughness: 0.15, transmission: 0.6, thickness: 1.5, flatShading: true });
-        heroGroup.add(new THREE.Mesh(new THREE.IcosahedronGeometry(1.2, 1), heroMaterials.planet));
-        
-        const rings = new THREE.Group(); rings.rotation.x = Math.PI / 2.5; rings.rotation.y = Math.PI / 12;
-        heroMaterials.ringInner = new THREE.MeshBasicMaterial({ wireframe: true, side: THREE.DoubleSide, transparent: true });
-        rings.add(new THREE.Mesh(new THREE.RingGeometry(1.6, 2.2, 64, 2), heroMaterials.ringInner));
-        
-        const pGeo = new THREE.BufferGeometry(); const pPos = new Float32Array(1200);
-        for(let i=0; i<1200; i+=3) { const a = Math.random()*Math.PI*2; const r=2.3+Math.random()*0.8; pPos[i]=Math.cos(a)*r; pPos[i+1]=Math.sin(a)*r; pPos[i+2]=(Math.random()-0.5)*0.1; }
-        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-        heroMaterials.particles = new THREE.PointsMaterial({ size: 0.03, transparent: true });
-        rings.add(new THREE.Points(pGeo, heroMaterials.particles));
-        
-        heroMaterials.ringOuter = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, transparent: true });
-        rings.add(new THREE.Mesh(new THREE.RingGeometry(3.3, 3.35, 128), heroMaterials.ringOuter));
-        
-        heroGroup.add(rings); scene.add(heroGroup); heroGroup.position.set(3.5, 0, 0);
-    }
+            heroMaterials.ringOuter = new THREE.MeshBasicMaterial({
+                side: THREE.DoubleSide,
+                transparent: true,
+            });
+            rings.add(
+                new THREE.Mesh(
+                    new THREE.RingGeometry(3.3, 3.35, 128),
+                    heroMaterials.ringOuter
+                )
+            );
 
-    function setupScrollAnimation() {
-        if (window.innerWidth < 1024) { heroGroup.position.set(1, 3, -5); heroGroup.scale.set(0.6, 0.6, 0.6); return; }
-        gsap.registerPlugin(ScrollTrigger);
-        let tl = gsap.timeline({ scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1.5 } });
-        tl.to(heroGroup.position, { x: -3.5, z: -2, y: 0.5, ease: "power1.inOut" }, 0.1);
-        tl.to(heroGroup.position, { x: 0, z: -4, y: -1.0, ease: "power1.inOut" }, 0.5);
-        tl.to(heroGroup.children[0].scale, { x: 0, y: 0, z: 0, ease: "power2.in" }, 0.4);
-        tl.to(heroGroup.position, { x: 0, z: 0, y: 1.5, ease: "power1.inOut" }, 0.9);
-        tl.to(heroGroup.children[0].scale, { x: 1, y: 1, z: 1, ease: "elastic.out(1, 0.5)" }, 0.85);
-        tl.to(heroGroup.rotation, { y: Math.PI * 2, x: 0.5, ease: "none" }, 0);
-    }
-
-    function updateHeroTheme(dark) {
-        if (!heroMaterials.planet) return;
-        if (dark) {
-            heroMaterials.planet.color.setHex(0x0f172a); heroMaterials.planet.emissive.setHex(0x06b6d4); heroMaterials.planet.emissiveIntensity = 0.2;
-            heroMaterials.ringInner.color.setHex(0x0891b2); heroMaterials.particles.color.setHex(0x67e8f9); heroMaterials.ringOuter.color.setHex(0xffffff);
-            lights.point.color.setHex(0xccfbf1); lights.rim.color.setHex(0x06b6d4);
-        } else {
-            heroMaterials.planet.color.setHex(0x3f2108); heroMaterials.planet.emissive.setHex(0xff5500); heroMaterials.planet.emissiveIntensity = 0.5;
-            heroMaterials.ringInner.color.setHex(0xffaa00); heroMaterials.particles.color.setHex(0xffd700); heroMaterials.ringOuter.color.setHex(0xcc8800);
-            lights.point.color.setHex(0xffaa66); lights.rim.color.setHex(0xffd700);
+            heroGroup.add(rings);
+            scene.add(heroGroup);
+            heroGroup.position.set(3.5, 0, 0);
         }
-    }
 
-    function setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('theme', theme); isDark = theme === 'dark';
-        if (mesh) gsap.to(mesh.material.uniforms.u_dark, { value: isDark ? 1.0 : 0.0, duration: 1.2, ease: "power2.inOut" });
-        updateHeroTheme(isDark);
-        document.querySelectorAll('.theme-toggle').forEach(btn => btn.classList.remove('active'));
-        const btnId = theme === 'light' ? 'theme-light' : 'theme-dark';
-        if(document.getElementById(btnId)) document.getElementById(btnId).classList.add('active');
-    }
+        function setupScrollAnimation() {
+            if (window.innerWidth < 1024) {
+                heroGroup.position.set(1, 3, -5);
+                heroGroup.scale.set(0.6, 0.6, 0.6);
+                return;
+            }
+            gsap.registerPlugin(ScrollTrigger);
+            let tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: "body",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 1.5,
+                },
+            });
+            tl.to(
+                heroGroup.position,
+                { x: -3.5, z: -2, y: 0.5, ease: "power1.inOut" },
+                0.1
+            );
+            tl.to(
+                heroGroup.position,
+                { x: 0, z: -4, y: -1.0, ease: "power1.inOut" },
+                0.5
+            );
+            tl.to(
+                heroGroup.children[0].scale,
+                { x: 0, y: 0, z: 0, ease: "power2.in" },
+                0.4
+            );
+            tl.to(
+                heroGroup.position,
+                { x: 0, z: 0, y: 1.5, ease: "power1.inOut" },
+                0.9
+            );
+            tl.to(
+                heroGroup.children[0].scale,
+                { x: 1, y: 1, z: 1, ease: "elastic.out(1, 0.5)" },
+                0.85
+            );
+            tl.to(heroGroup.rotation, { y: Math.PI * 2, x: 0.5, ease: "none" }, 0);
+        }
 
-    function loadTheme() { const savedTheme = localStorage.getItem('theme') || 'light'; setTheme(savedTheme); }
-    document.addEventListener('DOMContentLoaded', () => { initWebGL(); loadTheme(); });
-</script>
-    
-    <div id="generic-modal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        function updateHeroTheme(dark) {
+            if (!heroMaterials.planet) return;
+            if (dark) {
+                heroMaterials.planet.color.setHex(0x0f172a);
+                heroMaterials.planet.emissive.setHex(0x06b6d4);
+                heroMaterials.planet.emissiveIntensity = 0.2;
+                heroMaterials.ringInner.color.setHex(0x0891b2);
+                heroMaterials.particles.color.setHex(0x67e8f9);
+                heroMaterials.ringOuter.color.setHex(0xffffff);
+                lights.point.color.setHex(0xccfbf1);
+                lights.rim.color.setHex(0x06b6d4);
+            } else {
+                heroMaterials.planet.color.setHex(0x3f2108);
+                heroMaterials.planet.emissive.setHex(0xff5500);
+                heroMaterials.planet.emissiveIntensity = 0.5;
+                heroMaterials.ringInner.color.setHex(0xffaa00);
+                heroMaterials.particles.color.setHex(0xffd700);
+                heroMaterials.ringOuter.color.setHex(0xcc8800);
+                lights.point.color.setHex(0xffaa66);
+                lights.rim.color.setHex(0xffd700);
+            }
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute("data-theme", theme);
+            localStorage.setItem("theme", theme);
+            isDark = theme === "dark";
+            if (mesh)
+                gsap.to(mesh.material.uniforms.u_dark, {
+                    value: isDark ? 1.0 : 0.0,
+                    duration: 1.2,
+                    ease: "power2.inOut",
+                });
+            updateHeroTheme(isDark);
+            document
+                .querySelectorAll(".theme-toggle")
+                .forEach((btn) => btn.classList.remove("active"));
+            const btnId = theme === "light" ? "theme-light" : "theme-dark";
+            if (document.getElementById(btnId))
+                document.getElementById(btnId).classList.add("active");
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem("theme") || "light";
+            setTheme(savedTheme);
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            initWebGL();
+            loadTheme();
+        });
+    </script>
+
+    <div id="generic-modal"
+        class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-[#0f172a] border border-accent p-8 max-w-md w-full relative shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-            <button onclick="closeGenericModal()" class="absolute top-4 right-4 text-secondary hover:text-accent">✕</button>
-            <h3 id="modal-title" class="text-xl font-bold mb-6 text-accent font-mono">>> EDIT_DATA</h3>
-            
-            <form id="generic-form" class="space-y-4">
-                <input type="hidden" name="id" id="item-id">
-                <input type="hidden" name="type" id="item-type"> <input type="hidden" name="action" id="form-action"> <div id="modal-fields" class="space-y-4">
-                    </div>
+            <button onclick="closeGenericModal()" class="absolute top-4 right-4 text-secondary hover:text-accent">
+                ✕
+            </button>
+            <h3 id="modal-title" class="text-xl font-bold mb-6 text-accent font-mono">
+                >> EDIT_DATA
+            </h3>
 
-                <button type="submit" class="w-full py-3 mt-4 btn-minimal text-xs hover:bg-accent hover:text-black">SAVE DATA</button>
+            <form id="generic-form" class="space-y-4">
+                <input type="hidden" name="id" id="item-id" />
+                <input type="hidden" name="type" id="item-type" />
+                <input type="hidden" name="action" id="form-action" />
+                <div id="modal-fields" class="space-y-4"></div>
+
+                <button type="submit" class="w-full py-3 mt-4 btn-minimal text-xs hover:bg-accent hover:text-black">
+                    SAVE DATA
+                </button>
             </form>
         </div>
     </div>
 
-    <div id="skill-modal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div id="skill-modal"
+        class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-[#0f172a] border border-accent p-8 max-w-sm w-full relative">
-            <button onclick="document.getElementById('skill-modal').classList.add('hidden')" class="absolute top-4 right-4 text-secondary hover:text-accent">✕</button>
-            <h3 class="text-xl font-bold mb-6 text-accent font-mono">>> SKILL_NODE</h3>
+            <button onclick="document.getElementById('skill-modal').classList.add('hidden')"
+                class="absolute top-4 right-4 text-secondary hover:text-accent">
+                ✕
+            </button>
+            <h3 class="text-xl font-bold mb-6 text-accent font-mono">
+                >> SKILL_NODE
+            </h3>
             <form id="skill-form" class="space-y-4">
-                <input type="hidden" name="action" id="skill-action">
-                <input type="hidden" name="id" id="skill-id">
-                
+                <input type="hidden" name="action" id="skill-action" />
+                <input type="hidden" name="id" id="skill-id" />
+
                 <div>
                     <label class="block text-xs font-mono text-secondary mb-1">SKILL NAME</label>
-                    <input type="text" name="name" id="skill-name" required class="w-full p-2 text-sm bg-black/20 border border-gray-700 text-primary outline-none focus:border-accent">
+                    <input type="text" name="name" id="skill-name" required
+                        class="w-full p-2 text-sm bg-black/20 border border-gray-700 text-primary outline-none focus:border-accent" />
                 </div>
                 <div>
                     <label class="block text-xs font-mono text-secondary mb-1">PROFICIENCY (0-100)</label>
-                    <input type="number" name="proficiency" id="skill-proficiency" required class="w-full p-2 text-sm bg-black/20 border border-gray-700 text-primary outline-none focus:border-accent">
+                    <input type="number" name="proficiency" id="skill-proficiency" required
+                        class="w-full p-2 text-sm bg-black/20 border border-gray-700 text-primary outline-none focus:border-accent" />
                 </div>
-                <button type="submit" class="w-full py-3 btn-minimal text-xs hover:bg-accent hover:text-black">SAVE SKILL</button>
+                <button type="submit" class="w-full py-3 btn-minimal text-xs hover:bg-accent hover:text-black">
+                    SAVE SKILL
+                </button>
             </form>
         </div>
     </div>
 
-<script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
+
 </html>

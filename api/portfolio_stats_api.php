@@ -12,7 +12,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'GET') {
     try {
         // ===== DEMONSTRATION OF ADVANCED SQL QUERIES =====
-        
+
         // 1. AGGREGATE FUNCTIONS - Portfolio Statistics
         $statsQuery = '
             SELECT 

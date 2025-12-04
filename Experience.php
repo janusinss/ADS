@@ -32,7 +32,7 @@ class Experience
     {
         $query = 'SELECT * FROM ' . $this->table . ' 
                   ORDER BY is_current DESC, start_date DESC';
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -55,7 +55,7 @@ class Experience
                     ) as duration_text
                   FROM ' . $this->table . '
                   ORDER BY is_current DESC, start_date DESC';
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -70,7 +70,7 @@ class Experience
         $query = 'SELECT 
                     SUM(TIMESTAMPDIFF(MONTH, start_date, COALESCE(end_date, CURDATE()))) / 12 as total_years
                   FROM ' . $this->table;
-        
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
