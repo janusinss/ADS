@@ -44,9 +44,14 @@ html.lenis {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  cursor: none;
+  /* cursor: none;  <-- COMMENTED OUT OR DELETED */
 }
 
+/* Add this new rule anywhere in style.css */
+body.custom-cursor-active,
+body.custom-cursor-active * {
+    cursor: none !important;
+}
 /* === FORCE HIDE SCROLLBAR (GLOBAL NUCLEAR OPTION) === */
 html,
 body,

@@ -317,14 +317,24 @@ function scrambleText(element) {
 
 // === CUSTOM CURSOR ===
 function initCustomCursor() {
+  // 1. If Reduced Motion is ON, we return early. 
+  // Because we removed the global CSS, the System Cursor will stay visible!
   if (prefersReducedMotion) return;
+
+  // 2. If we are here, we are good to go. Add the class to hide system cursor.
+  document.body.classList.add("custom-cursor-active"); 
+
   const cursor = document.getElementById("cursor");
-  const mouse = { x: -100, y: -100 };
-  const pos = { x: -100, y: -100 };
+  
+  // Center the cursor initially so it doesn't spawn off-screen
+  const mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+  const pos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
   document.addEventListener("mousemove", (e) => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
   });
+
   gsap.ticker.add(() => {
     const dt = 1.0 - Math.pow(1.0 - 0.2, gsap.ticker.deltaRatio());
     pos.x += (mouse.x - pos.x) * dt;
