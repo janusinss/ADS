@@ -262,11 +262,14 @@ function initTilt(element) {
 }
 
 // === MASKED REVEAL & SCRAMBLE ===
+// === ADVANCED 3D CARD ANIMATION ===
 function animateItems(selector) {
+  // 1. Wait a moment for DOM to paint
   setTimeout(() => {
     const items = document.querySelectorAll(selector);
+    
+    // 2. Initial Setup: Create mask for headers if needed
     items.forEach((el) => {
-      // Wrap headers in mask
       if (el.tagName.match(/^H[1-6]$/)) {
         const text = el.innerText;
         el.innerHTML = `<div class="reveal-text"><span>${text}</span></div>`;
@@ -274,41 +277,97 @@ function animateItems(selector) {
       }
     });
 
+    // 3. Batch Animation using ScrollTrigger
     ScrollTrigger.batch(selector, {
+      start: "top 85%", // Trigger slightly earlier
       onEnter: (batch) => {
-        batch.forEach((el, i) => {
-          const mask = el.querySelector(".reveal-text");
-          if (mask) {
-            setTimeout(() => mask.classList.add("is-visible"), i * 100);
-          } else {
-            gsap.to(el, {
-              opacity: 1,
-              y: 0,
-              delay: i * 0.1,
-              duration: 0.8,
-              ease: "power3.out",
+        
+        // Check if these are cards (to apply special 3D tilt)
+        const isCard = batch[0].classList.contains('project-card') || 
+                       batch[0].classList.contains('info-card') ||
+                       batch[0].classList.contains('skill-tag');
+      
+        if (isCard) {
+            // == THE CREATIVE TILT EFFECT ==
+            setTimeout(() => {
+                initScrollGestures(batch);
+            }, 1400);
+            gsap.fromTo(batch, 
+                {
+                    opacity: 0,
+                    y: 100,             // Start lower
+                    rotateX: 45,        // Tilted back like a falling card
+                    rotateY: -10,       // Slight side angle
+                    scale: 0.8,         // Start smaller
+                    transformOrigin: "50% 100%" // Pivot from bottom
+                },
+                {
+                    opacity: 1,
+                    y: 0,
+                    rotateX: 0,
+                    rotateY: 0,
+                    scale: 1,
+                    stagger: 0.15,      // Cascade effect
+                    duration: 1.4,
+                    ease: "elastic.out(1, 0.75)", // Satisfying bounce
+                    clearProps: "transform, opacity", // Clean up to allow hover effects later
+                    onComplete: () => {
+                         // Optional: Add gentle floating after they arrive
+                         initFloating(batch);
+                    }
+                }
+            );
+        } else {
+            // Standard Text Reveal for Headers/Paragraphs
+            batch.forEach((el, i) => {
+                const mask = el.querySelector(".reveal-text");
+                if (mask) {
+                    mask.classList.add("is-visible");
+                } else {
+                    gsap.to(el, {
+                        opacity: 1,
+                        y: 0,
+                        delay: i * 0.1,
+                        duration: 0.8,
+                        ease: "power3.out",
+                    });
+                }
+                
+                // Re-attach Scramble Effect
+                if (el.hasAttribute("data-scramble") || el.querySelector("[data-scramble]")) {
+                    const target = el.hasAttribute("data-scramble") ? el : el.querySelector("[data-scramble]");
+                    scrambleText(target);
+                    target.addEventListener("mouseenter", () => {
+                        scrambleText(target);
+                        if (typeof AudioEngine !== "undefined") AudioEngine.playGlitch();
+                    });
+                }
             });
-          }
-
-          if (
-            el.hasAttribute("data-scramble") ||
-            el.querySelector("[data-scramble]")
-          ) {
-            const target = el.hasAttribute("data-scramble")
-              ? el
-              : el.querySelector("[data-scramble]");
-            scrambleText(target);
-            target.addEventListener("mouseenter", () => {
-              scrambleText(target);
-              if (typeof AudioEngine !== "undefined") AudioEngine.playGlitch();
-            });
-          }
-        });
+        }
       },
-      start: "top 90%",
-      once: true,
+      once: true, // Only animate once
     });
   }, 100);
+}
+
+// === NEW: FLOATING IDLE ANIMATION ===
+function initFloating(elements) {
+    if(prefersReducedMotion) return;
+    
+    elements.forEach(el => {
+        // Random float duration and offset for organic feel
+        const duration = 3 + Math.random() * 2; 
+        const yOffset = 5 + Math.random() * 5;
+        
+        gsap.to(el, {
+            y: `-=${yOffset}`,
+            rotation: (Math.random() - 0.5) * 2, // Very slight rotation
+            duration: duration,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1
+        });
+    });
 }
 
 function scrambleText(element) {
@@ -1139,4 +1198,62 @@ function openEditProject(p) {
   // FIX: Show Cursor
 
   modal.classList.remove("hidden");
+}
+
+// === CONTINUOUS SCROLL "BREATHING" ANIMATION ===
+function initScrollGestures(items) {
+  if (prefersReducedMotion) return;
+
+  items.forEach((el) => {
+    // 1. Clean up old triggers if they exist to prevent memory leaks
+    if (el._scrollTrigger) el._scrollTrigger.kill();
+
+    // 2. Create the Cinematic Focus Animation
+    // We use a timeline to sequence the specific focus effect
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: el,
+        start: "top bottom+=10%", // Start animating when top enters bottom of screen
+        end: "bottom top-=10%",   // End when bottom leaves top of screen
+        scrub: 0.5,               // Smooth scrubbing (0.5s lag)
+        toggleClass: "in-focus",  // Adds CSS class when in the active zone
+        onUpdate: (self) => {
+            // Optional: Modify intensity based on scroll velocity
+            const vel = Math.abs(self.getVelocity());
+            if(vel > 2000) el.style.filter = `blur(${Math.min(vel/1000, 3)}px)`;
+            else el.style.filter = "none";
+        }
+      }
+    });
+
+    // 3. Define the movement
+    // It starts tilted and small, becomes flat and big, then tilts and shrinks again
+    tl.fromTo(el, 
+      { 
+        scale: 0.95, 
+        rotateX: -15,   // Tilted towards viewer (looking up)
+        opacity: 0.7,
+        z: -50 
+      }, 
+      {
+        scale: 1, 
+        rotateX: 0,     // Flat (Center of screen)
+        opacity: 1, 
+        z: 0,
+        ease: "power2.out",
+        duration: 1 // First half of scroll (Bottom to Center)
+      }
+    )
+    .to(el, {
+      scale: 0.95, 
+      rotateX: 15,    // Tilted away (Looking down)
+      opacity: 0.7,
+      z: -50,
+      ease: "power2.in",
+      duration: 1 // Second half of scroll (Center to Top)
+    });
+    
+    // Save reference for cleanup
+    el._scrollTrigger = tl.scrollTrigger;
+  });
 }

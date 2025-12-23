@@ -597,3 +597,73 @@ body.loading #cursor {
   opacity: 0 !important;
   display: none !important;
 }
+
+/* Update the existing card classes [cite: 613] */
+.project-card,
+.info-card,
+.skill-tag {
+  /* Ensure 3D space is preserved for the tilt animation */
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  /* Add a subtle glass border glow */
+  box-shadow: 
+    0 4px 30px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Add a beautiful "Scanline Shine" on hover */
+.project-card::after,
+.info-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 100%
+    );
+    transform: skewX(-25deg);
+    transition: left 0.5s;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.project-card:hover::after,
+.info-card:hover::after {
+    left: 200%; /* Sweeps across the card on hover */
+    transition: left 0.7s ease-in-out;
+}
+
+/* enhance the depth on hover [cite: 615] */
+.project-card:hover,
+.info-card:hover {
+  transform: translateY(-10px) scale(1.02) rotateX(2deg); /* Lifts up towards user */
+  border-color: var(--accent);
+  box-shadow: 
+    0 20px 40px -10px var(--accent-dim),
+    inset 0 0 20px rgba(var(--accent), 0.1); /* Inner glow */
+  z-index: 10;
+}
+
+/* Update the existing card classes to have deep perspective */
+.project-card,
+.info-card,
+.skill-tag {
+  /* ... keep your existing styles (background, border, etc.) ... */
+  
+  /* CRITICAL FOR 3D SCROLL: */
+  transform-style: preserve-3d;
+  will-change: transform, opacity; /* Optimizes performance */
+  transform-origin: center center;
+}
+
+/* Optional: Add a smooth shadow that grows when the card is in the center */
+.project-card.in-focus,
+.info-card.in-focus {
+    border-color: var(--accent);
+    box-shadow: 0 15px 40px -10px var(--accent-dim);
+}
