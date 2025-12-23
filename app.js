@@ -96,18 +96,38 @@ function initMagneticButtons() {
 }
 
 // === SMOOTH NAV ===
+// === SMOOTH NAV ===
 function initSmoothNav() {
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", function (e) {
+      // 1. Always prevent the default instant jump
       e.preventDefault();
+      
       const targetId = this.getAttribute("href");
       const targetElem = document.querySelector(targetId);
-      if (targetElem && lenis) {
-        lenis.scrollTo(targetElem, {
-          offset: 0,
-          duration: 1.5,
-          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        });
+
+      if (targetElem) {
+        // 2. Try the Fancy Liquid Scroll (Lenis)
+        if (typeof lenis !== 'undefined' && lenis) {
+            lenis.scrollTo(targetElem, {
+                offset: 0,
+                duration: 1.5,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            });
+        } 
+        // 3. Fallback: Force GSAP Animation
+        // This works even if "Reduced Motion" is on or Lenis is missing
+        else {
+            // Calculate exactly where the element is on the page
+            const targetPosition = targetElem.getBoundingClientRect().top + window.scrollY;
+            
+            // Animate the window scroll manually
+            gsap.to("html, body", {
+                scrollTop: targetPosition,
+                duration: 1.2,
+                ease: "power2.inOut"
+            });
+        }
       }
     });
   });
